@@ -16,6 +16,8 @@ export default async function MyStartupPage() {
   
   // Find user and their startup
   const dbUser = await User.findById(session.user.id).lean();
+  if (!dbUser) redirect("/login");
+
   let startup = null;
 
   if (dbUser.currentStartup) {

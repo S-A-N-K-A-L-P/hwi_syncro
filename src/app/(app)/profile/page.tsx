@@ -14,6 +14,7 @@ export default async function ProfilePage() {
 
   await dbConnect();
   const user = await User.findById(session.user.id).lean();
+  if (!user) redirect("/login");
   let startup = null;
 
   if (user.currentStartup) {
