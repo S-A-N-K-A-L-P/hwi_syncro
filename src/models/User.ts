@@ -1,4 +1,22 @@
-import mongoose, { Schema, model, models } from "mongoose";
+import mongoose, { Schema, model, models, Document } from "mongoose";
+
+export interface IUser extends Document {
+  name: string;
+  email: string;
+  universityName: string;
+  enrollmentNumber: string;
+  techStackPreference: string;
+  avatar?: string;
+  universityLogo?: string;
+  bio?: string;
+  skills: string[];
+  location?: string;
+  role: "admin" | "leader" | "member" | "pixel_head" | "project_lead" | "pixel_member" | "normal_user";
+  currentStartup?: mongoose.Types.ObjectId;
+  reputation: number;
+  followers: mongoose.Types.ObjectId[];
+  following: mongoose.Types.ObjectId[];
+}
 
 const UserSchema = new Schema(
   {
@@ -78,6 +96,6 @@ const UserSchema = new Schema(
   }
 );
 
-const User = models.User || model("User", UserSchema);
+const User = models.User || model<IUser>("User", UserSchema);
 
 export default User;

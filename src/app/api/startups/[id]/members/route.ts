@@ -11,7 +11,7 @@ export async function GET(
     const { id } = await props.params;
     await dbConnect();
 
-    const startup = await Startup.findById(id)
+    const startup: any = await Startup.findById(id)
       .populate("members", "name avatar email role bio skills currentStartup")
       .select("members")
       .lean();

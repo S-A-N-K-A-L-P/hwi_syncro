@@ -1,4 +1,20 @@
-import mongoose, { Schema, model, models } from "mongoose";
+import mongoose, { Schema, model, models, Document } from "mongoose";
+
+export interface IStartup extends Document {
+  name: string;
+  slug: string;
+  description: string;
+  techStack: string[];
+  requiredRoles: string[];
+  createdBy: mongoose.Types.ObjectId;
+  members: mongoose.Types.ObjectId[];
+  inviteCode: string;
+  visibility: "public" | "private";
+  logo?: string;
+  status: "ideation" | "mvp" | "scaling" | "launched";
+  createdAt: Date;
+  updatedAt: Date;
+}
 
 const StartupSchema = new Schema(
   {
@@ -61,6 +77,6 @@ const StartupSchema = new Schema(
   }
 );
 
-const Startup = models.Startup || model("Startup", StartupSchema);
+const Startup = models.Startup || model<IStartup>("Startup", StartupSchema);
 
 export default Startup;
