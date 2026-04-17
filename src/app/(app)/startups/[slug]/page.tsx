@@ -13,7 +13,7 @@ export default async function StartupDetailsPage(props: { params: Promise<{ slug
   await dbConnect();
   const session = await getServerSession(authOptions);
 
-  const startup = await Startup.findOne({ slug })
+  const startup: any = await Startup.findOne({ slug })
     .populate("createdBy", "name avatar bio email")
     .populate("members", "name avatar role")
     .lean();
