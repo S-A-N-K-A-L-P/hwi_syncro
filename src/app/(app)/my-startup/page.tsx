@@ -15,7 +15,7 @@ export default async function MyStartupPage() {
   await dbConnect();
   
   // Find user and their startup
-  const dbUser = await User.findById(session.user.id).lean();
+  const dbUser: any = await User.findById(session.user.id).lean();
   if (!dbUser) redirect("/login");
 
   let startup = null;
@@ -24,7 +24,7 @@ export default async function MyStartupPage() {
     startup = await Startup.findById(dbUser.currentStartup)
       .populate("members", "name avatar email role bio")
       .populate("createdBy", "name avatar")
-      .lean();
+      .lean() as any;
   }
 
   // Case 1: User not in a startup
