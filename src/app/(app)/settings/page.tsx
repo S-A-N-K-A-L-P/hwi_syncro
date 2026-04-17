@@ -5,6 +5,7 @@ import { useSession } from "next-auth/react";
 import { Save, User as UserIcon, Shield, Code2, MapPin, Loader2, Sparkles, Zap } from "lucide-react";
 import { motion } from "framer-motion";
 import GitSettings from "@/components/settings/GitSettings";
+import ImageUpload from "@/components/common/ImageUpload";
 
 export default function SettingsPage() {
   const { data: session, update } = useSession();
@@ -15,6 +16,7 @@ export default function SettingsPage() {
     location: "",
     skills: "",
     role: "user",
+    avatar: "",
   });
 
   const fetchProfile = async () => {
@@ -28,6 +30,7 @@ export default function SettingsPage() {
           location: data.location || "",
           skills: data.skills?.join(", ") || "",
           role: data.role || "user",
+          avatar: data.avatar || "",
         });
       }
     } catch (err) {
