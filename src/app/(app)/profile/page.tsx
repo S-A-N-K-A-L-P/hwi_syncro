@@ -18,7 +18,7 @@ export default async function ProfilePage() {
   let startup = null;
 
   if (user.currentStartup) {
-    startup = await Startup.findById(user.currentStartup).lean();
+    startup = await Startup.findById(user.currentStartup).lean() as any;
   }
 
   return (
