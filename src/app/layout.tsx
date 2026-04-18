@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { Providers } from "@/components/Providers";
+import Script from "next/script";
 
 export const metadata: Metadata = {
   title: "PIXEL Platform",
@@ -11,7 +12,6 @@ export const metadata: Metadata = {
 // Reads the saved preference from localStorage, falls back to OS
 // prefers-color-scheme, and sets data-theme on <html> immediately.
 const themeScript = `
-(function(){
   try {
     var stored = localStorage.getItem('pixel-platform-theme');
     var theme = stored;
@@ -20,7 +20,6 @@ const themeScript = `
     }
     document.documentElement.setAttribute('data-theme', theme);
   } catch(e) {}
-})();
 `;
 
 export default function RootLayout({
@@ -40,7 +39,9 @@ export default function RootLayout({
       }
     >
       <head>
-        <script dangerouslySetInnerHTML={{ __html: themeScript }} />
+        <Script id="theme-strategy" strategy="beforeInteractive">
+          {themeScript}
+        </Script>
       </head>
       <body className="antialiased">
         <Providers>{children}</Providers>
