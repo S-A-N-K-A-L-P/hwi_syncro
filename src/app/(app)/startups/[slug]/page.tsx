@@ -22,8 +22,8 @@ export default async function StartupDetailsPage(props: { params: Promise<{ slug
     notFound();
   }
 
-  const isCreator = session?.user?.id === (startup.createdBy as any)._id.toString();
-  const isMember = startup.members.some((m: any) => m._id.toString() === session?.user?.id);
+  const isCreator = session?.user?.id === startup.createdBy?._id?.toString();
+  const isMember = startup.members?.some((m: any) => m?._id?.toString() === session?.user?.id);
 
   return (
     <div className="space-y-8">

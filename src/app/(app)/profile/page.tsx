@@ -58,7 +58,7 @@ export default async function ProfilePage() {
                 <Hexagon size={16} className="text-emerald-500 opacity-20 fill-emerald-500" />
               </div>
               <p className="text-emerald-600 font-black text-[11px] uppercase tracking-[0.2em]">
-                {user.role} <span className="text-slate-200 dark:text-slate-800 mx-2">|</span> {user.universityName}
+                {user.role} <span className="text-slate-200 dark:text-slate-800 mx-2">|</span> {user.universityName || "Alumni"}
               </p>
             </div>
 

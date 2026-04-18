@@ -68,7 +68,7 @@ export default async function MyStartupPage() {
     );
   }
 
-  const isLeader = startup.createdBy._id.toString() === session.user.id;
+  const isLeader = startup.createdBy?._id?.toString() === session.user.id;
 
   // Case 2: User is in a startup
   return (

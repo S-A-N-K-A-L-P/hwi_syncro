@@ -42,7 +42,9 @@ export default async function Home() {
   ]);
 
   // Fetch featured projects
-  const featuredProjects = await Proposal.find({ createdBy: { $type: "objectId" } })
+  const featuredProjects = await Proposal.find({ 
+    createdBy: { $exists: true, $ne: null } 
+  })
     .sort({ votes: -1 })
     .limit(3)
     .populate("createdBy", "name avatar")
