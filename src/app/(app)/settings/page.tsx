@@ -89,6 +89,13 @@ export default function SettingsPage() {
           </div>
 
           <div className="md:col-span-2 bg-surface border border-border-subtle rounded-2xl p-6 space-y-6 shadow-sm">
+            <ImageUpload 
+              label="Profile Node Avatar" 
+              folder="avatars" 
+              defaultImage={formData.avatar}
+              onUpload={(url) => setFormData({ ...formData, avatar: url })} 
+            />
+
             <div className="space-y-2">
               <label className="text-[10px] font-mono font-bold text-muted uppercase tracking-widest ml-1">Bio / Mission Statement</label>
               <textarea

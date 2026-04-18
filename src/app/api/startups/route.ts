@@ -56,7 +56,7 @@ export async function POST(req: NextRequest) {
       return sendError("Unauthorized", 401);
     }
 
-    const { name, description, techStack, requiredRoles } = await req.json();
+    const { name, description, techStack, requiredRoles, logo } = await req.json();
 
     if (!name || !description || !techStack) {
       return sendError("Missing required fields (name, description, techStack)", 400);
@@ -85,6 +85,7 @@ export async function POST(req: NextRequest) {
       createdBy: authUser.id,
       inviteCode,
       members: [authUser.id],
+      logo: logo || "",
     });
 
     // Update user role to leader and set currentStartup

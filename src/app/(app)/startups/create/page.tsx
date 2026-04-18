@@ -5,6 +5,7 @@ import { motion } from "framer-motion";
 import { useRouter } from "next/navigation";
 import { Rocket, Target, Code2, Users, ArrowRight, Loader2, Sparkles, Building2 } from "lucide-react";
 import { toast } from "sonner";
+import ImageUpload from "@/components/common/ImageUpload";
 
 export default function CreateStartupPage() {
   const [formData, setFormData] = useState({
@@ -12,6 +13,7 @@ export default function CreateStartupPage() {
     description: "",
     techStack: "",
     requiredRoles: "",
+    logo: "",
   });
   const [loading, setLoading] = useState(false);
   const router = useRouter();
@@ -70,6 +72,13 @@ export default function CreateStartupPage() {
             className="bg-white dark:bg-slate-950 p-8 md:p-10 rounded-[2.5rem] border border-slate-100 dark:border-slate-800 shadow-2xl shadow-emerald-500/5"
           >
             <form onSubmit={handleSubmit} className="space-y-8">
+              <ImageUpload 
+                label="Launchpad Emblem (Logo)" 
+                folder="logos" 
+                defaultImage={formData.logo}
+                onUpload={(url) => setFormData({ ...formData, logo: url })} 
+              />
+
               <div className="space-y-2.5">
                 <label className="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-[0.25em] ml-1">Startup Name (Must be unique)</label>
                 <div className="relative group">
