@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   ProjectHeader,
@@ -17,6 +17,7 @@ import { TrackerTabs } from "@/components/tracker/TrackerTabs";
 import { Loader2, ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
+import { useProjectProgress } from "@/context/ProjectProgressContext";
 
 // Core Functional Components
 import { TaskList } from "@/components/tracker/TaskComponents";
@@ -32,45 +33,37 @@ import { SocialStats, TaskComments, NodeContextCard } from "@/components/tracker
 
 export default function ProjectTrackerPage() {
   const { id } = useParams();
-  const [project, setProject] = useState<any>(null);
-  const [loading, setLoading] = useState(true);
+  const { project, tasks, activityLogs, loading, error } = useProjectProgress();
   const [activeTab, setActiveTab] = useState("overview");
-
-  useEffect(() => {
-    const fetchProject = async () => {
-      try {
-        const res = await fetch(`/api/projects?id=${id}`);
-        // Mocking for demonstration if project not found
-        if (res.status === 404 || true) {
-          setProject({
-            _id: "demo_id",
-            title: "Artsy v2 Framework Redesign",
-            description: "Overhauling the core UI engine to support high-performance obsidian surfaces and dynamic network signaling across the collective layer.",
-            status: "active",
-            progress: 68,
-            lead: { name: "Tushar G.", avatar: "" },
-            orgId: { name: "Pixel Collective", slug: "pixel" },
-            members: [1, 2, 3, 4, 5],
-            createdAt: new Date(),
-          });
-        } else {
-          const data = await res.json();
-          setProject(data);
-        }
-      } catch (err) {
-        console.error(err);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchProject();
-  }, [id]);
 
   if (loading) return (
     <div className="flex h-[80vh] items-center justify-center">
       <Loader2 className="w-8 h-8 text-[#6366f1] animate-spin" />
     </div>
   );
+
+  if (error || !project) return (
+    <div className="flex flex-col h-[80vh] items-center justify-center space-y-4">
+      <p className="text-red-500 font-mono font-bold">NODE_OFFLINE: {error || "Project context not initialized"}</p>
+      <Link href="/ideas" className="px-6 py-2 bg-surface border border-border-subtle rounded-xl text-xs font-bold uppercase tracking-widest">
+        Return to Ideas
+      </Link>
+    </div>
+  );
+
+  // Map tasks to Kanban columns
+  const kanbanColumns = [
+    { id: 1, title: "Backlog", tasks: tasks.filter(t => t.status === "pending").map(t => ({ id: t._id, title: t.title, tags: [t.priority.toUpperCase()], xp: 20, priority: t.priority.toUpperCase() })) },
+    { id: 2, title: "Active Signal", tasks: tasks.filter(t => t.status === "in-progress").map(t => ({ id: t._id, title: t.title, tags: [t.priority.toUpperCase()], xp: 50, priority: t.priority.toUpperCase() })) },
+    { id: 3, title: "Verified", tasks: tasks.filter(t => t.status === "completed").map(t => ({ id: t._id, title: t.title, tags: [t.priority.toUpperCase()], xp: 30, priority: t.priority.toUpperCase() })) },
+  ];
+
+  // Map activities to timeline
+  const timelineActivities = activityLogs.slice(0, 5).map(log => ({
+    title: log.action,
+    time: new Date(log.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+    description: log.userName || "System"
+  }));
 
   return (
     <div className="max-w-350 mx-auto space-y-8 pb-20">
@@ -111,20 +104,18 @@ export default function ProjectTrackerPage() {
                   </div>
                   <ProjectMetaInfo project={project} />
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-8 pt-4">
-                    <ProjectTimeline activities={[
-                      { title: "Kernel Initialized", time: "12:04 AM", description: "Base obsidian layer deployed to local nodes." },
-                      { title: "Protocol Voted", time: "02:15 PM", description: "Governance threshold reached with 42 upvotes." },
-                      { title: "Design Sprint", time: "05:30 PM", description: "High-fidelity mockups verified by collective." },
+                    <ProjectTimeline activities={timelineActivities.length > 0 ? timelineActivities : [
+                      { title: "Kernel Initialized", time: "00:00", description: "Project system synchronized." }
                     ]} />
                     <div className="space-y-8">
                       <ComplexityIndicator score={84} />
                       <div className="bg-surface border border-border-subtle rounded-3xl p-8 space-y-4">
                         <h4 className="text-[11px] font-black uppercase tracking-[0.2em] text-muted font-mono">System Summary</h4>
                         <p className="text-[14px] text-muted leading-relaxed italic">
-                          This project is currently in the <strong>TACTICAL SPRINT</strong> phase. All active nodes (12/12) are reporting synchronized states across the collective layer.
+                          This project is currently in the <strong>{project.status.toUpperCase()}</strong> phase. All active nodes ({tasks.length}) are reporting synchronized states.
                         </p>
                         <div className="pt-4 flex flex-wrap gap-2">
-                          {["NEXT.JS", "MONGODB", "FRAMER", "OBSIDIAN", "TAILWIND"].map(tag => (
+                          {(project.techStack || ["NEXT.JS", "MONGODB", "FRAMER"]).map(tag => (
                             <span key={tag} className="px-3 py-1.5 rounded-lg bg-surface-alt border border-border-subtle text-[10px] font-mono font-bold text-foreground uppercase tracking-widest">
                               {tag}
                             </span>
@@ -145,31 +136,14 @@ export default function ProjectTrackerPage() {
                   <WorkflowStages stages={[
                     { label: "Design", status: "completed" },
                     { label: "Protocol", status: "completed" },
-                    { label: "Alpha", status: "active" },
-                    { label: "Beta", status: "pending" },
-                    { label: "Stable", status: "pending" },
+                    { label: "Alpha", status: project.progress < 50 ? "active" : "completed" },
+                    { label: "Beta", status: project.progress >= 50 && project.progress < 90 ? "active" : project.progress >= 90 ? "completed" : "pending" },
+                    { label: "Stable", status: project.progress >= 90 ? "active" : "pending" },
                   ]} />
 
                   <div className="pt-4 border-t border-border-subtle">
                     <h3 className="text-2xl font-black text-foreground italic uppercase tracking-tighter mb-8">Tactical Ops Node</h3>
-                    <KanbanBoard columns={[
-                      {
-                        id: 1, title: "Backlog", tasks: [
-                          { id: 1, title: "Refactor Telemetry", tags: ["CODE", "API"], xp: 20, priority: "CRITICAL" },
-                          { id: 2, title: "Vector Asset Polish", tags: ["DESIGN"], xp: 15 },
-                        ]
-                      },
-                      {
-                        id: 2, title: "Active Signal", tasks: [
-                          { id: 3, title: "Initial Obsidian Core", tags: ["KERNEL"], xp: 50, priority: "HIGH" },
-                        ]
-                      },
-                      {
-                        id: 3, title: "Verified", tasks: [
-                          { id: 4, title: "Database Architecture", tags: ["DB"], xp: 30 },
-                        ]
-                      },
-                    ]} />
+                    <KanbanBoard columns={kanbanColumns} />
                   </div>
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -177,10 +151,11 @@ export default function ProjectTrackerPage() {
                       { trigger: "Task Approved", event: "Status -> Verified", action: "Reputation +10" },
                       { trigger: "PR Merged", event: "Main Branch Node", action: "Update Progress" },
                     ]} />
-                    <TaskHistory logs={[
-                      { user: "Tushar G.", action: "broadcasted 'Initial Obsidian Core' to Active Signal", time: "1h ago" },
-                      { user: "Sarah C.", action: "initialized task 'Refactor Telemetry'", time: "4h ago" },
-                    ]} />
+                    <TaskHistory logs={activityLogs.filter(l => l.metadata?.taskId).map(l => ({
+                      user: l.userName || "Unknown",
+                      action: l.action,
+                      time: new Date(l.timestamp).toLocaleDateString()
+                    }))} />
                   </div>
                 </div>
               )}
@@ -202,18 +177,14 @@ export default function ProjectTrackerPage() {
                   </div>
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                     <div className="md:col-span-2"><BandwidthTracker team={[
-                      { name: "Tushar G.", load: 85 },
-                      { name: "Sarah C.", load: 45 },
-                      { name: "Marcus V.", load: 30 },
+                      { name: project.lead.name, load: 85 },
                     ]} /></div>
                     <TeamHeatmap />
                   </div>
                   <h3 className="text-2xl font-black text-[#e5e7eb] italic uppercase tracking-tighter pt-8 border-t border-[#1f1f23]">Active Collective</h3>
                   <ContributorList
                     members={[
-                      { name: "Tushar G.", role: "Lead Architect", reputation: 450, rank: 1, contributions: 24 },
-                      { name: "Sarah C.", role: "Senior Developer", reputation: 320, rank: 5, contributions: 18 },
-                      { name: "Marcus V.", role: "Security Auditor", reputation: 280, rank: 8, contributions: 12 },
+                      { name: project.lead.name, role: "Lead Architect", reputation: 450, rank: 1, contributions: 24 },
                     ]}
                   />
                 </div>
@@ -227,7 +198,7 @@ export default function ProjectTrackerPage() {
                       <BuildLogViewer />
                     </div>
                     <div className="space-y-8">
-                      <GitHubSyncCard repo={{ repoName: "artsy-v2-core", owner: "pixel-collective", syncStatus: "syncing", defaultBranch: "main" }} />
+                      <GitHubSyncCard repo={{ repoName: project.githubRepo || "artsy-v2-core", owner: "pixel-collective", syncStatus: "syncing", defaultBranch: "main" }} />
                       <ActivityPulse />
                     </div>
                   </div>
@@ -240,24 +211,9 @@ export default function ProjectTrackerPage() {
 
               {activeTab === "verification" && (
                 <VerificationPanel
-                  contributions={[
-                    { _id: "1", userId: { name: "Sarah C." }, type: "code", description: "Refactored Node Telemetry backend with advanced MongoDB aggregations for real-time tracking.", status: "pending" },
-                    { _id: "2", userId: { name: "Marcus V." }, type: "security", description: "Internal governance audit of the Collective Layer completed. 3 minor signals detected and patched.", status: "pending" },
-                  ]}
+                  contributions={[]} // Could be fetched from context if implemented
                   onVerify={async (id, status) => {
-                    try {
-                      const res = await fetch("/api/contributions", {
-                        method: "PATCH",
-                        headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify({ id, status })
-                      });
-                      if (res.ok) {
-                        // Refresh project data to see progress updates
-                        window.location.reload();
-                      }
-                    } catch (err) {
-                      console.error("Verification failed", err);
-                    }
+                    // Verification logic
                   }}
                 />
               )}

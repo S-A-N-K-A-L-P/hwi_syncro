@@ -5,29 +5,37 @@ import { List, User, Activity, ShieldCheck, PieChart } from "lucide-react";
 
 export function TrackerTabs({ activeTab, setActiveTab }: { activeTab: string, setActiveTab: (t: string) => void }) {
   const tabs = [
-    { id: "overview", label: "Protocol Overview", icon: ShieldCheck },
+    { id: "overview", label: "Protocol", icon: ShieldCheck },
     { id: "tasks", label: "Tactical Ops", icon: List },
-    { id: "contributors", label: "Node Operators", icon: User },
+    { id: "contributors", label: "Operators", icon: User },
     { id: "activity", label: "Signal Feed", icon: Activity },
     { id: "verification", label: "Final Audit", icon: PieChart },
   ];
 
   return (
-    <div className="flex items-center gap-1 p-1 bg-[#121214] border border-[#1f1f23] rounded-2xl overflow-x-auto no-scrollbar">
+    <div className="flex items-center gap-1 p-1 bg-[#121214] border border-[#1f1f23] rounded-[1.25rem] overflow-x-auto no-scrollbar shadow-inner relative">
       {tabs.map((tab) => {
         const isActive = activeTab === tab.id;
         return (
           <button
             key={tab.id}
             onClick={() => setActiveTab(tab.id)}
-            className={`flex items-center gap-2 px-6 py-3 rounded-xl transition-all whitespace-nowrap group ${
+            className={`flex items-center gap-2 px-6 py-3.5 rounded-[1rem] transition-all whitespace-nowrap group relative ${
               isActive 
-                ? "bg-[#17171a] border border-[#1f1f23] text-[#e5e7eb]" 
-                : "text-[#1f1f23] hover:text-[#9ca3af]"
+                ? "text-foreground" 
+                : "text-muted hover:text-foreground/70"
             }`}
           >
-            <tab.icon className={`w-4 h-4 transition-colors ${isActive ? "text-[#6366f1]" : "group-hover:text-[#6366f1]/50"}`} />
-            <span className="text-[11px] font-bold uppercase tracking-widest">{tab.label}</span>
+            {isActive && (
+              <motion.div 
+                layoutId="activeTab"
+                className="absolute inset-0 bg-white/5 border border-white/10 rounded-[1rem] shadow-lg"
+                transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
+              />
+            )}
+            
+            <tab.icon className={`w-4 h-4 transition-all relative z-10 ${isActive ? "text-[#6366f1] scale-110" : "group-hover:text-[#6366f1]/50"}`} />
+            <span className="text-[10px] font-black uppercase tracking-[0.2em] relative z-10">{tab.label}</span>
           </button>
         );
       })}
