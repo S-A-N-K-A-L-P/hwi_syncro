@@ -8,6 +8,7 @@ import { StartupAssistant } from "./StartupAssistant";
 import { MentorshipHub } from "./MentorshipHub";
 import { ProductBuilder } from "./ProductBuilder";
 import { TaskManager } from "./TaskManager";
+import { FundingTraction } from "./FundingTraction";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
 
@@ -216,25 +217,7 @@ export function StartupManagement({
         {activeTab === "mentors" && <MentorshipHub />}
         
         {activeTab === "funding" && (
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-             <div className="lg:col-span-2 bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-[2.5rem] p-10 space-y-8">
-                <h3 className="text-sm font-black uppercase tracking-widest">Investor Readiness</h3>
-                <div className="p-8 bg-slate-50 dark:bg-slate-800 rounded-3xl border-2 border-dashed border-slate-200 dark:border-slate-700 text-center space-y-4">
-                   <PieChart size={32} className="mx-auto text-slate-300" />
-                   <p className="text-[10px] font-black uppercase text-slate-400">Upload Pitch Deck to start tracking metrics</p>
-                   <Button variant="outline" className="text-[10px] uppercase font-black">Upload Deck (.PDF)</Button>
-                </div>
-             </div>
-             <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-[2.5rem] p-8 space-y-6">
-                <h3 className="text-[10px] font-black uppercase tracking-widest">Current Traction</h3>
-                <div className="space-y-4">
-                   <div className="h-2 w-full bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
-                      <div className="h-full w-1/3 bg-emerald-500" />
-                   </div>
-                   <p className="text-[9px] font-bold text-slate-400 uppercase text-center">33% Investor Ready</p>
-                </div>
-             </div>
-          </div>
+           <FundingTraction />
         )}
 
         {activeTab === "settings" && (
