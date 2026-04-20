@@ -1,0 +1,84 @@
+{
+  "niches": [
+    {
+      "id": "cs",
+      "label": "Computer Science & IT",
+      "technologies": [
+        "React/Next.js", "Flutter/Dart", "Node.js", "Python/Django", "TensorFlow", "Kubernetes", "AWS/GCP", "Solidity", "Rust", "Web3.js", "GraphQL", "PostgreSQL", "Redis", "Docker"
+      ],
+      "roles": [
+        "Fullstack Engineer", "AI/ML Researcher", "Blockchain Architect", "DevOps Specialist", "Frontend Specialist", "Backend Specialist", "Security Auditor", "Data Engineer"
+      ]
+    },
+    {
+      "id": "medical",
+      "label": "Bio-Medical & Healthcare",
+      "technologies": [
+        "CRISPR/Cas9", "Bio-Informatics", "Telemedicine Protocols", "Lab-on-a-chip", "MRI/CT Imaging Software", "Electronic Health Records (EHR)", "Next-Gen Sequencing", "Prosthetics Design", "FDA/HIPAA Compliance logic"
+      ],
+      "roles": [
+        "Bio-Chemist", "Medical Device Engineer", "Regulatory Specialist", "Healthcare Consultant", "Clinical Researcher", "Bio-Informatics Data Scientist", "Lab Technician"
+      ]
+    },
+    {
+      "id": "mechanical",
+      "label": "Mechanical & Robotics",
+      "technologies": [
+        "SolidWorks", "AutoCAD", "MATLAB/Simulink", "ROS (Robot OS)", "Additive Manufacturing (3D Printing)", "CNC Programming", "Ansys/FEA", "Embedded C/C++", "PLC/SCADA", "IoT Sensors"
+      ],
+      "roles": [
+        "Robotics Engineer", "Manufacturing Specialist", "Materials Scientist", "Control Systems Engineer", "Quality Assurance (Mechanical)", "Automation Architect"
+      ]
+    },
+    {
+      "id": "civil",
+      "label": "Civil & Construction",
+      "technologies": [
+        "BIM (Building Information Modeling)", "Revit", "Structural Analysis", "Smart City Protocols", "GIS Mapping", "Sustainable Materials", "Drones for Surveying", "Concrete Tech", "Hyperloop Infrastructures"
+      ],
+      "roles": [
+        "Structural Engineer", "Urban Planner", "Site Supervisor", "Geotechnical Expert", "Sustainability Consultant", "Project Manager"
+      ]
+    },
+    {
+      "id": "finance",
+      "label": "Finance & FinTech",
+      "technologies": [
+        "Algorithmic Trading", "Stripe API", "Plaid Integration", "KYC/AML automation", "Quantum Computing (Finance)", "High-Frequency Data streaming", "Ledger logic", "Central Bank Digital Currencies (CBDC)"
+      ],
+      "roles": [
+        "Quantitative Analyst", "Financial Risk Manager", "FinTech Product Manager", "Economic Strategist", "Compliance Officer", "Investment Analyst"
+      ]
+    },
+    {
+      "id": "legal",
+      "label": "Legal & LawTech",
+      "technologies": [
+        "Smart Contracts (Legal)", "Natural Language Processing (Legal docs)", "Case Management Software", "Blockchain Notarization", "Privacy Laws APIs"
+      ],
+      "roles": [
+        "Legal Counsel", "Product Manager (Legal-Tech)", "Policy Analyst", "Ethics Consultant", "IP Strategist"
+      ]
+    },
+    {
+      "id": "space",
+      "label": "Space & Aerospace",
+      "technologies": [
+        "Orbital Mechanics", "Propulsion Systems", "Satellite Communication", "Avionics", "Space-grade Materials", "Navigation Systems (GPS/Galileo)", "Telemetry Data"
+      ],
+      "roles": [
+        "Aerospace Engineer", "Propulsion Scientist", "Avionics Specialist", "Payload Specialist", "Ground Control Operator"
+      ]
+    },
+    {
+      "id": "design",
+      "label": "Design & Creative",
+      "technologies": [
+        "Figma", "Adobe Creative Suite", "Cinema 4D", "Spline (3D Design)", "Generative Art (AI)", "UX Research tools", "Typography Systems", "Design Philosophy"
+      ],
+      "roles": [
+        "Creative Director", "UI/UX Researcher", "Product Designer", "Motion Graphic Artist", "Brand Strategist", "Industrial Designer"
+      ]
+    }
+  ]
+}

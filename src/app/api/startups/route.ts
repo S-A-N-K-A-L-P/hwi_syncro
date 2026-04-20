@@ -56,10 +56,10 @@ export async function POST(req: NextRequest) {
       return sendError("Unauthorized", 401);
     }
 
-    const { name, description, techStack, requiredRoles, logo } = await req.json();
+    const { name, description, techStack, primaryTechnology, requiredRoles, logo } = await req.json();
 
-    if (!name || !description || !techStack) {
-      return sendError("Missing required fields (name, description, techStack)", 400);
+    if (!name || !description || !techStack || !primaryTechnology) {
+      return sendError("Missing required fields (name, description, techStack, primaryTechnology)", 400);
     }
 
     await dbConnect();
@@ -81,6 +81,7 @@ export async function POST(req: NextRequest) {
       slug,
       description,
       techStack: Array.isArray(techStack) ? techStack : techStack.split(",").map((s: string) => s.trim()),
+      primaryTechnology,
       requiredRoles: Array.isArray(requiredRoles) ? requiredRoles : requiredRoles.split(",").map((s: string) => s.trim()),
       createdBy: authUser.id,
       inviteCode,

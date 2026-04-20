@@ -11,7 +11,8 @@ export interface IStartup extends Document {
   inviteCode: string;
   visibility: "public" | "private";
   logo?: string;
-  status: "ideation" | "mvp" | "scaling" | "launched";
+  status: "ideation" | "prototype" | "user_gathering" | "revenue" | "expanding" | "mvp" | "scaling" | "launched";
+  registrationType: "pvt_ltd" | "llp" | "unregistered";
   createdAt: Date;
   updatedAt: Date;
 }
@@ -38,6 +39,10 @@ const StartupSchema = new Schema(
     techStack: {
       type: [String],
       required: [true, "Tech stack is required"],
+    },
+    primaryTechnology: {
+      type: String,
+      required: [true, "Primary technology is required"],
     },
     requiredRoles: {
       type: [String],
@@ -68,8 +73,13 @@ const StartupSchema = new Schema(
     },
     status: {
       type: String,
-      enum: ["ideation", "mvp", "scaling", "launched"],
+      enum: ["ideation", "prototype", "user_gathering", "revenue", "expanding", "mvp", "scaling", "launched"],
       default: "ideation",
+    },
+    registrationType: {
+      type: String,
+      enum: ["pvt_ltd", "llp", "unregistered"],
+      default: "unregistered",
     }
   },
   {
