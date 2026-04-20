@@ -6,6 +6,8 @@ import { StartupStageTracker } from "./StartupStageTracker";
 import { RequestManagement } from "./RequestManagement";
 import { StartupAssistant } from "./StartupAssistant";
 import { MentorshipHub } from "./MentorshipHub";
+import { ProductBuilder } from "./ProductBuilder";
+import { TaskManager } from "./TaskManager";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
 
@@ -203,46 +205,11 @@ export function StartupManagement({
 
         {/* Placeholder sections for the new deep features */}
         {activeTab === "product" && (
-          <div className="p-20 bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-[2.5rem] text-center space-y-6 shadow-sm">
-             <Layout size={48} className="mx-auto text-emerald-600 opacity-20" />
-             <div>
-               <h3 className="text-xl font-black uppercase italic tracking-tight">AI Product Builder</h3>
-               <p className="text-xs text-slate-400 font-medium max-w-sm mx-auto uppercase mt-2">Initialize your Mobile, Web, or AI Product using architectural scaffolding templates.</p>
-             </div>
-             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 max-w-2xl mx-auto pt-6">
-               {["Mobile App", "Web Platform", "AI Engine"].map(type => (
-                 <div key={type} className="p-6 bg-slate-50 dark:bg-slate-800 rounded-3xl border border-slate-100 dark:border-slate-800 hover:border-emerald-500/50 transition-all cursor-pointer group">
-                   <h4 className="text-[10px] font-black uppercase mb-1">{type}</h4>
-                   <p className="text-[8px] font-bold text-slate-400 uppercase">Beta Scaffolding</p>
-                 </div>
-               ))}
-             </div>
-          </div>
+          <ProductBuilder />
         )}
 
         {activeTab === "tasks" && (
-           <div className="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-[2.5rem] p-10 space-y-8 shadow-sm">
-              <div className="flex items-center justify-between">
-                <h3 className="text-sm font-black uppercase tracking-widest">Sprint Execution</h3>
-                <Button className="bg-emerald-600 text-white font-black text-[10px] uppercase">New Mission Task</Button>
-              </div>
-              <div className="space-y-4">
-                 {[1, 2, 3].map(i => (
-                   <div key={i} className="p-6 bg-slate-50 dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-800 flex items-center justify-between">
-                      <div className="flex items-center gap-4">
-                        <div className="w-4 h-4 rounded-full border-2 border-slate-200" />
-                        <div>
-                          <p className="text-xs font-black uppercase tracking-tight">Initialize Backend Architecture</p>
-                          <p className="text-[9px] font-bold text-slate-400 uppercase">Priority: High • AI Suggested</p>
-                        </div>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <span className="text-[8px] font-black uppercase bg-slate-200 dark:bg-slate-700 px-3 py-1 rounded-full">To Do</span>
-                      </div>
-                   </div>
-                 ))}
-              </div>
-           </div>
+           <TaskManager />
         )}
 
         {activeTab === "assistant" && <StartupAssistant />}
