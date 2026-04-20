@@ -71,7 +71,7 @@ export function StartupManagement({
                 return (
                   <button
                     key={tab.id}
-                    onClick={() => setActiveTab(tab.id)}
+                    onClick={() => handleTabChange(tab.id)}
                     className={cn(
                       "w-full flex items-center gap-3 px-4 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all",
                       isActive 
@@ -155,10 +155,7 @@ export function StartupManagement({
                   </div>
                   <h3 className="text-lg font-black uppercase italic tracking-tight relative z-10">Next Strategic Move</h3>
                   <p className="text-xs text-slate-400 font-medium leading-relaxed relative z-10">
-                    {startup.status === 'ideation' 
-                      ? "Focus on problem validation. Conduct at least 15 potential user interviews to verify your problem statement before building the prototype."
-                      : "Prepare for beta launch. Ensure your core product loop is stable and you have a basic onboarding flow for early users."
-                    }
+                    {getStageAdvice()}
                   </p>
                   <Button className="w-full h-14 bg-emerald-600 hover:bg-emerald-700 text-white font-black text-[10px] uppercase tracking-widest rounded-2xl relative z-10">
                     Get AI Blueprint
