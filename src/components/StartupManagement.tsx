@@ -12,7 +12,11 @@ import {
   ShieldCheck,
   Mail,
   Share2,
-  Rocket
+  Rocket,
+  Layout,
+  ListChecks,
+  PieChart,
+  Briefcase
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { StartupStageTracker } from "./StartupStageTracker";
@@ -23,11 +27,14 @@ import { Button } from "@/components/ui/button";
 import Image from "next/image";
 
 const TABS = [
-  { id: "overview", label: "Mission Overview", icon: Target },
-  { id: "team", label: "Core Architects", icon: Users },
-  { id: "requests", label: "Recruitments", icon: Activity },
-  { id: "assistant", label: "Syncro Assist", icon: Sparkles },
-  { id: "mentorship", label: "Mentors", icon: HelpCircle },
+  { id: "overview", label: "Overview", icon: Target },
+  { id: "team", label: "Architects", icon: Users },
+  { id: "product", label: "Product Builder", icon: Layout },
+  { id: "tasks", label: "Task Engine", icon: ListChecks },
+  { id: "assistant", label: "AI Assistant", icon: Sparkles },
+  { id: "mentors", label: "Mentors", icon: HelpCircle },
+  { id: "funding", label: "Funding", icon: PieChart },
+  { id: "settings", label: "Settings", icon: Settings },
 ];
 
 export function StartupManagement({ 
@@ -40,101 +47,119 @@ export function StartupManagement({
   const [activeTab, setActiveTab] = useState("overview");
 
   return (
-    <div className="space-y-8">
-      {/* Premium Header */}
-      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-[2.5rem] p-8 md:p-12 shadow-sm relative overflow-hidden">
-        <div className="absolute -top-24 -right-24 w-96 h-96 bg-emerald-500/5 blur-[120px] rounded-full pointer-events-none" />
-        
-        <div className="relative z-10 flex flex-col md:flex-row gap-10 items-start md:items-center">
-          <div className="w-32 h-32 rounded-3xl bg-emerald-600 flex items-center justify-center text-white text-5xl font-black shadow-2xl shadow-emerald-500/20">
-            {startup.name[0]}
-          </div>
-          
-          <div className="space-y-4 flex-1">
-            <div className="flex flex-wrap items-center gap-4">
-               <span className="px-4 py-1.5 bg-emerald-50 dark:bg-emerald-900/30 text-emerald-600 text-[10px] font-black uppercase tracking-widest rounded-full border border-emerald-500/10">
-                 {isLeader ? "Lead Architect" : "Core Member"}
-               </span>
-               <span className="px-4 py-1.5 bg-slate-50 dark:bg-slate-800 text-slate-500 text-[10px] font-black uppercase tracking-widest rounded-full border border-slate-100 dark:border-slate-700">
-                 {startup.registrationType || "Unregistered"}
-               </span>
-            </div>
-            <h1 className="text-4xl md:text-6xl font-black text-slate-900 dark:text-white uppercase italic tracking-tighter leading-none">{startup.name}</h1>
-            <p className="text-slate-500 dark:text-slate-400 font-medium text-lg leading-relaxed max-w-2xl">{startup.description}</p>
-          </div>
-
-          <div className="flex flex-wrap md:flex-col gap-3 pt-4 w-full md:w-auto">
-             <Button className="flex-1 md:w-full h-14 bg-slate-900 dark:bg-white text-white dark:text-slate-900 rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-emerald-600 dark:hover:bg-emerald-600 hover:text-white dark:hover:text-white transition-all shadow-sm">
-               <Settings size={16} className="mr-2" /> Startup Settings
-             </Button>
-             <Button variant="outline" className="flex-1 md:w-full h-14 bg-white dark:bg-slate-950 border-2 border-slate-100 dark:border-slate-800 text-slate-900 dark:text-white rounded-2xl text-[10px] font-black uppercase tracking-widest hover:border-emerald-600/50 transition-all shadow-xs">
-               <Share2 size={16} className="mr-2" /> Share Concept
-             </Button>
-          </div>
+    <div className="flex flex-col lg:flex-row gap-8">
+      {/* Internal Sidebar for Startup Dashboard */}
+      <div className="w-full lg:w-64 space-y-4">
+        <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-6 shadow-sm">
+           <div className="flex items-center gap-4 mb-8">
+              <div className="w-12 h-12 rounded-xl bg-emerald-600 flex items-center justify-center text-white font-black text-xl shadow-lg">
+                {startup.name[0]}
+              </div>
+              <div>
+                <h2 className="text-sm font-black text-slate-900 dark:text-white uppercase tracking-tight truncate w-32">{startup.name}</h2>
+                <p className="text-[9px] font-bold text-emerald-600 uppercase tracking-widest">{startup.status}</p>
+              </div>
+           </div>
+           
+           <nav className="space-y-1">
+              {TABS.map((tab) => {
+                const Icon = tab.icon;
+                const isActive = activeTab === tab.id;
+                
+                return (
+                  <button
+                    key={tab.id}
+                    onClick={() => setActiveTab(tab.id)}
+                    className={cn(
+                      "w-full flex items-center gap-3 px-4 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all",
+                      isActive 
+                        ? "bg-slate-900 dark:bg-white text-white dark:text-slate-900 shadow-lg" 
+                        : "text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-50 dark:hover:bg-slate-800/50"
+                    )}
+                  >
+                    <Icon size={14} />
+                    {tab.label}
+                  </button>
+                );
+              })}
+           </nav>
         </div>
+
+        {isLeader && (
+           <div className="bg-emerald-600 rounded-3xl p-6 text-white space-y-4 shadow-xl shadow-emerald-500/20">
+              <h3 className="text-[10px] font-black uppercase tracking-widest opacity-80">Invite Code</h3>
+              <p className="text-2xl font-black tracking-widest italic">{startup.inviteCode}</p>
+              <Button size="sm" className="w-full bg-white text-emerald-600 hover:bg-emerald-50 font-black text-[10px] uppercase">
+                Copy Code
+              </Button>
+           </div>
+        )}
       </div>
 
-      {/* Navigation Tabs */}
-      <div className="flex flex-wrap gap-2 p-2 bg-white dark:bg-slate-950 border border-slate-100 dark:border-slate-800 rounded-2xl shadow-sm">
-        {TABS.map((tab) => {
-          const Icon = tab.icon;
-          const isActive = activeTab === tab.id;
-          
-          if (tab.id === "requests" && !isLeader) return null;
-
-          return (
-            <button
-              key={tab.id}
-              onClick={() => setActiveTab(tab.id)}
-              className={cn(
-                "flex items-center gap-3 px-6 py-4 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all",
-                isActive 
-                  ? "bg-emerald-600 text-white shadow-lg shadow-emerald-500/20" 
-                  : "text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-50 dark:hover:bg-slate-900"
-              )}
-            >
-              <Icon size={14} />
-              {tab.label}
-            </button>
-          );
-        })}
-      </div>
-
-      {/* Content Area */}
-      <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
+      {/* Main Content Area */}
+      <div className="flex-1 space-y-8 animate-in fade-in slide-in-from-right-4 duration-500">
         {activeTab === "overview" && (
           <div className="space-y-8">
-            <div className="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-[2.5rem] p-10 space-y-8 shadow-sm">
-              <div className="flex justify-between items-center">
-                <h3 className="text-sm font-black uppercase tracking-widest text-slate-900 dark:text-white">Mission Roadmap</h3>
-                <span className="text-[10px] font-black uppercase text-emerald-600 bg-emerald-50 dark:bg-emerald-900/10 px-4 py-1.5 rounded-full border border-emerald-500/10">Stage: {startup.status}</span>
+            <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-[2.5rem] p-10 space-y-8 shadow-sm">
+              <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                <div>
+                   <h3 className="text-xl font-black uppercase italic tracking-tighter text-slate-900 dark:text-white mb-1">Mission Roadmap</h3>
+                   <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Growth progression and current trajectory</p>
+                </div>
+                <span className="text-[10px] font-black uppercase text-emerald-600 bg-emerald-50 dark:bg-emerald-900/10 px-4 py-2 rounded-full border border-emerald-500/10">Stage: {startup.status}</span>
               </div>
               <StartupStageTracker currentStage={startup.status} />
+              
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-8 border-t border-slate-100 dark:border-slate-800">
+                 {[
+                   { label: "Active Users", value: startup.kpis?.users || 0, change: "+12%" },
+                   { label: "Revenue", value: `$${startup.kpis?.revenue || 0}`, change: "+5%" },
+                   { label: "Growth", value: `${startup.kpis?.growth || 0}%`, change: "+2%" },
+                 ].map((kpi, i) => (
+                   <div key={i} className="p-6 bg-slate-50 dark:bg-slate-800/30 rounded-2xl border border-slate-100 dark:border-slate-800 flex flex-col gap-1">
+                      <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">{kpi.label}</p>
+                      <p className="text-2xl font-black text-slate-900 dark:text-white italic">{kpi.value}</p>
+                      <p className="text-[9px] font-bold text-emerald-500">{kpi.change} This Week</p>
+                   </div>
+                 ))}
+              </div>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-               <div className="bg-emerald-600 rounded-[2.5rem] p-10 text-white relative overflow-hidden flex flex-col justify-between min-h-[300px] shadow-2xl shadow-emerald-500/20 group">
-                  <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_20%,rgba(255,255,255,0.2),transparent_40%)] pointer-events-none" />
-                  <div className="relative space-y-2">
-                     <h3 className="text-sm font-black uppercase tracking-widest opacity-80">Invite Core Architects</h3>
-                     <p className="text-4xl lg:text-6xl font-black tracking-widest leading-none mb-1 italic uppercase">{startup.inviteCode}</p>
-                     <p className="text-[10px] font-bold opacity-60 uppercase tracking-widest">Architects must apply to join your mission</p>
+               <div className="p-10 bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-[2.5rem] space-y-6">
+                  <div className="flex items-center gap-3">
+                    <Briefcase className="text-emerald-500" size={24} />
+                    <h3 className="text-lg font-black uppercase italic tracking-tight">Mission Metadata</h3>
                   </div>
-                  <Button variant="secondary" className="relative self-start h-14 px-8 bg-white text-emerald-600 rounded-2xl font-black text-xs uppercase tracking-widest shadow-xl flex items-center gap-3 hover:scale-105 active:scale-95 transition-all">
-                    Copy invite Code
-                  </Button>
+                  <div className="space-y-4">
+                     <div className="flex justify-between items-center py-3 border-b border-slate-50 dark:border-slate-800">
+                        <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Registration</span>
+                        <span className="text-[10px] font-black text-slate-900 dark:text-white uppercase">{startup.registrationType || "Not Registered"}</span>
+                     </div>
+                     <div className="flex justify-between items-center py-3 border-b border-slate-50 dark:border-slate-800">
+                        <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Business Model</span>
+                        <span className="text-[10px] font-black text-slate-900 dark:text-white uppercase">{startup.businessModel || "SaaS"}</span>
+                     </div>
+                     <div className="flex justify-between items-center py-3">
+                        <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Equity Pool</span>
+                        <span className="text-[10px] font-black text-emerald-600 uppercase">{startup.equityOffering || "0%"}</span>
+                     </div>
+                  </div>
                </div>
 
-               <div className="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-[2.5rem] p-10 flex flex-col justify-between shadow-sm">
-                  <div className="space-y-4">
-                     <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-2">
-                       <ShieldCheck size={14} className="text-emerald-500" /> Certification Status
-                     </p>
-                     <h3 className="text-3xl font-black text-slate-900 dark:text-white uppercase italic tracking-tighter leading-none">Vanguard Verified</h3>
-                     <p className="text-xs text-slate-500 font-medium leading-relaxed">Your startup has passed the initial validation check and is now visible to the global mentorship network.</p>
+               <div className="p-10 bg-slate-900 text-white rounded-[2.5rem] space-y-6 relative overflow-hidden group">
+                  <div className="absolute top-0 right-0 p-10 opacity-10 group-hover:rotate-12 transition-transform">
+                    <Rocket size={120} />
                   </div>
-                  <Button variant="outline" className="self-start mt-6 border-slate-200 dark:border-slate-800 rounded-xl text-[10px] font-black uppercase tracking-widest hover:border-emerald-500/50 transition-all">
-                    View Credentials <ArrowUpRight size={14} className="ml-2" />
+                  <h3 className="text-lg font-black uppercase italic tracking-tight relative z-10">Next Strategic Move</h3>
+                  <p className="text-xs text-slate-400 font-medium leading-relaxed relative z-10">
+                    {startup.status === 'ideation' 
+                      ? "Focus on problem validation. Conduct at least 15 potential user interviews to verify your problem statement before building the prototype."
+                      : "Prepare for beta launch. Ensure your core product loop is stable and you have a basic onboarding flow for early users."
+                    }
+                  </p>
+                  <Button className="w-full h-14 bg-emerald-600 hover:bg-emerald-700 text-white font-black text-[10px] uppercase tracking-widest rounded-2xl relative z-10">
+                    Get AI Blueprint
                   </Button>
                </div>
             </div>
@@ -142,50 +167,129 @@ export function StartupManagement({
         )}
 
         {activeTab === "team" && (
-           <div className="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-[2.5rem] p-10 space-y-8 shadow-sm">
-              <div className="flex items-center justify-between border-b border-slate-50 dark:border-slate-800 pb-6">
-                 <h2 className="text-sm font-black text-slate-900 dark:text-white uppercase tracking-widest flex items-center gap-2">
-                   <Users size={18} className="text-emerald-600" /> Active Architects
-                 </h2>
-                 <span className="text-[10px] font-black text-slate-400 uppercase bg-slate-50 dark:bg-slate-800 px-4 py-2 rounded-full">{startup.members.length} Architects Found</span>
-              </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {startup.members.map((member: any) => (
-                  <div key={member._id} className="p-6 bg-slate-50 dark:bg-slate-800/30 border border-slate-100 dark:border-slate-700/50 rounded-3xl flex items-center justify-between group hover:border-emerald-500/20 transition-all">
-                    <div className="flex items-center gap-4">
-                      <div className="w-14 h-14 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 flex items-center justify-center font-bold text-slate-900 dark:text-white relative overflow-hidden group-hover:border-emerald-500/30 transition-all">
-                         {member.avatar ? (
-                           <Image src={member.avatar} alt={member.name} fill className="object-cover" />
-                         ) : member.name[0]}
+           <div className="space-y-8">
+              <div className="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-[2.5rem] p-10 space-y-8 shadow-sm">
+                <div className="flex items-center justify-between border-b border-slate-50 dark:border-slate-800 pb-6">
+                   <h2 className="text-sm font-black text-slate-900 dark:text-white uppercase tracking-widest flex items-center gap-2">
+                     <Users size={18} className="text-emerald-600" /> Active Architects
+                   </h2>
+                   <span className="text-[10px] font-black text-slate-400 uppercase bg-slate-50 dark:bg-slate-800 px-4 py-2 rounded-full">{startup.members.length} Architects</span>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {startup.members.map((member: any) => (
+                    <div key={member._id} className="p-6 bg-slate-50 dark:bg-slate-800/30 border border-slate-100 dark:border-slate-700/50 rounded-2xl flex items-center justify-between group">
+                      <div className="flex items-center gap-4">
+                        <div className="w-12 h-12 rounded-xl bg-white border border-slate-200 dark:border-slate-700 flex items-center justify-center font-bold relative overflow-hidden">
+                           {member.avatar ? <Image src={member.avatar} alt={member.name} fill className="object-cover" /> : member.name[0]}
+                        </div>
+                        <div>
+                           <p className="text-xs font-black text-slate-900 dark:text-white uppercase tracking-tight">{member.name}</p>
+                           <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">{member._id === startup.createdBy._id ? "Lead Architect" : "Engineer"}</p>
+                        </div>
                       </div>
-                      <div>
-                         <p className="text-xs font-black text-slate-900 dark:text-white uppercase tracking-tight group-hover:text-emerald-600 transition-colors">{member.name}</p>
-                         <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">{member._id === startup.createdBy._id ? "Lead Architect" : "Engineer"}</p>
-                      </div>
+                      <Button variant="ghost" size="icon" className="text-slate-300 hover:text-emerald-600"><Mail size={18} /></Button>
                     </div>
-                    <Mail size={18} className="text-slate-300 hover:text-emerald-600 transition-colors cursor-pointer" />
-                  </div>
-                ))}
+                  ))}
+                </div>
+              </div>
+
+              {isLeader && (
+                <div className="space-y-6">
+                   <h3 className="text-sm font-black uppercase tracking-widest text-slate-900 dark:text-white px-4">Applicant Pool</h3>
+                   <RequestManagement startupId={startup._id} />
+                </div>
+              )}
+           </div>
+        )}
+
+        {/* Placeholder sections for the new deep features */}
+        {activeTab === "product" && (
+          <div className="p-20 bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-[2.5rem] text-center space-y-6 shadow-sm">
+             <Layout size={48} className="mx-auto text-emerald-600 opacity-20" />
+             <div>
+               <h3 className="text-xl font-black uppercase italic tracking-tight">AI Product Builder</h3>
+               <p className="text-xs text-slate-400 font-medium max-w-sm mx-auto uppercase mt-2">Initialize your Mobile, Web, or AI Product using architectural scaffolding templates.</p>
+             </div>
+             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 max-w-2xl mx-auto pt-6">
+               {["Mobile App", "Web Platform", "AI Engine"].map(type => (
+                 <div key={type} className="p-6 bg-slate-50 dark:bg-slate-800 rounded-3xl border border-slate-100 dark:border-slate-800 hover:border-emerald-500/50 transition-all cursor-pointer group">
+                   <h4 className="text-[10px] font-black uppercase mb-1">{type}</h4>
+                   <p className="text-[8px] font-bold text-slate-400 uppercase">Beta Scaffolding</p>
+                 </div>
+               ))}
+             </div>
+          </div>
+        )}
+
+        {activeTab === "tasks" && (
+           <div className="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-[2.5rem] p-10 space-y-8 shadow-sm">
+              <div className="flex items-center justify-between">
+                <h3 className="text-sm font-black uppercase tracking-widest">Sprint Execution</h3>
+                <Button className="bg-emerald-600 text-white font-black text-[10px] uppercase">New Mission Task</Button>
+              </div>
+              <div className="space-y-4">
+                 {[1, 2, 3].map(i => (
+                   <div key={i} className="p-6 bg-slate-50 dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-800 flex items-center justify-between">
+                      <div className="flex items-center gap-4">
+                        <div className="w-4 h-4 rounded-full border-2 border-slate-200" />
+                        <div>
+                          <p className="text-xs font-black uppercase tracking-tight">Initialize Backend Architecture</p>
+                          <p className="text-[9px] font-bold text-slate-400 uppercase">Priority: High • AI Suggested</p>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <span className="text-[8px] font-black uppercase bg-slate-200 dark:bg-slate-700 px-3 py-1 rounded-full">To Do</span>
+                      </div>
+                   </div>
+                 ))}
               </div>
            </div>
         )}
 
-        {activeTab === "requests" && isLeader && (
-           <div className="space-y-6">
-              <div className="flex items-center justify-between px-4">
-                 <h3 className="text-sm font-black uppercase tracking-widest text-slate-900 dark:text-white">Pending Applicant Pipeline</h3>
-                 <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest bg-slate-50 dark:bg-slate-800 px-4 py-2 rounded-full">Recruitment Active</span>
-              </div>
-              <RequestManagement startupId={startup._id} />
+        {activeTab === "assistant" && <StartupAssistant />}
+        {activeTab === "mentors" && <MentorshipHub />}
+        
+        {activeTab === "funding" && (
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+             <div className="lg:col-span-2 bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-[2.5rem] p-10 space-y-8">
+                <h3 className="text-sm font-black uppercase tracking-widest">Investor Readiness</h3>
+                <div className="p-8 bg-slate-50 dark:bg-slate-800 rounded-3xl border-2 border-dashed border-slate-200 dark:border-slate-700 text-center space-y-4">
+                   <PieChart size={32} className="mx-auto text-slate-300" />
+                   <p className="text-[10px] font-black uppercase text-slate-400">Upload Pitch Deck to start tracking metrics</p>
+                   <Button variant="outline" className="text-[10px] uppercase font-black">Upload Deck (.PDF)</Button>
+                </div>
+             </div>
+             <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-[2.5rem] p-8 space-y-6">
+                <h3 className="text-[10px] font-black uppercase tracking-widest">Current Traction</h3>
+                <div className="space-y-4">
+                   <div className="h-2 w-full bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
+                      <div className="h-full w-1/3 bg-emerald-500" />
+                   </div>
+                   <p className="text-[9px] font-bold text-slate-400 uppercase text-center">33% Investor Ready</p>
+                </div>
+             </div>
+          </div>
+        )}
+
+        {activeTab === "settings" && (
+           <div className="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-[2.5rem] p-10 space-y-8 shadow-sm">
+             <h3 className="text-sm font-black uppercase tracking-widest">Ecosystem Settings</h3>
+             <div className="grid grid-cols-1 md:grid-cols-2 gap-8 pt-6 border-t border-slate-50 dark:border-slate-800">
+               <div className="space-y-4">
+                  <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Visibility</label>
+                  <select className="w-full bg-slate-50 dark:bg-slate-800 border-none rounded-xl p-4 text-xs font-bold uppercase tracking-widest">
+                    <option>Public Mission</option>
+                    <option>Stealth Mode</option>
+                  </select>
+               </div>
+               <div className="space-y-4">
+                  <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Recruitment status</label>
+                  <Button className="w-full h-14 bg-emerald-600 hover:bg-emerald-700 text-white font-black text-[10px] uppercase tracking-widest rounded-xl">
+                    Accepting Applications
+                  </Button>
+               </div>
+             </div>
            </div>
-        )}
-
-        {activeTab === "assistant" && (
-          <StartupAssistant />
-        )}
-
-        {activeTab === "mentorship" && (
-           <MentorshipHub />
         )}
       </div>
     </div>
