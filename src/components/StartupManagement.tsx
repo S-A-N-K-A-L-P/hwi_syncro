@@ -1,23 +1,6 @@
 "use client";
 
-import { useState } from "react";
-import { 
-  Users, 
-  Target, 
-  Sparkles, 
-  HelpCircle, 
-  Activity, 
-  Settings, 
-  ArrowUpRight,
-  ShieldCheck,
-  Mail,
-  Share2,
-  Rocket,
-  Layout,
-  ListChecks,
-  PieChart,
-  Briefcase
-} from "lucide-react";
+import { useRouter, usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { StartupStageTracker } from "./StartupStageTracker";
 import { RequestManagement } from "./RequestManagement";
@@ -39,12 +22,31 @@ const TABS = [
 
 export function StartupManagement({ 
   startup, 
-  isLeader 
+  isLeader,
+  initialTab = "overview"
 }: { 
   startup: any; 
-  isLeader: boolean 
+  isLeader: boolean;
+  initialTab?: string;
 }) {
-  const [activeTab, setActiveTab] = useState("overview");
+  const router = useRouter();
+  const pathname = usePathname();
+  const activeTab = initialTab;
+
+  const handleTabChange = (tabId: string) => {
+    router.push(`/my-startup/${tabId}`);
+  };
+
+  const getStageAdvice = () => {
+    switch (startup.status) {
+      case 'ideation': return "Focus on problem validation. Conduct at least 15 potential user interviews to verify your problem statement before building the prototype.";
+      case 'prototype': return "Execute rapid prototyping. Use the AI Product Builder to scaffold your MVP and test core functionality with a small cohort.";
+      case 'early_users': return "Optimize for retention. Track how frequently your 'Alpha' users return and fix friction points in the onboarding flow.";
+      case 'revenue': return "Stabilize unit economics. Ensure your CAC is lower than LTV and prepare your first professional pitch deck for investors.";
+      case 'scaling': return "Automate and delegate. Expand your 'Architect' team and focus on multi-channel growth strategies.";
+      default: return "Define your next milestone and assign tasks to your core team.";
+    }
+  };
 
   return (
     <div className="flex flex-col lg:flex-row gap-8">
