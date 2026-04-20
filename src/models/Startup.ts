@@ -11,8 +11,19 @@ export interface IStartup extends Document {
   inviteCode: string;
   visibility: "public" | "private";
   logo?: string;
-  status: "ideation" | "prototype" | "user_gathering" | "revenue" | "expanding" | "mvp" | "scaling" | "launched";
-  registrationType: "pvt_ltd" | "llp" | "unregistered";
+  tagline: string;
+  problemStatement: string;
+  solutionOverview: string;
+  industry: string;
+  businessModel: "SaaS" | "Marketplace" | "D2C" | "B2B" | "Service" | "Other";
+  status: "ideation" | "prototype" | "early_users" | "revenue" | "expanding" | "mvp" | "scaling" | "launched";
+  registrationType: "pvt_ltd" | "llp" | "sole_proprietorship" | "unregistered";
+  equityOffering: string;
+  kpis: {
+    users: number;
+    revenue: number;
+    growth: number;
+  };
   createdAt: Date;
   updatedAt: Date;
 }
@@ -71,15 +82,46 @@ const StartupSchema = new Schema(
       type: String,
       default: "",
     },
+    tagline: {
+      type: String,
+      trim: true,
+      default: "",
+    },
+    problemStatement: {
+      type: String,
+      default: "",
+    },
+    solutionOverview: {
+      type: String,
+      default: "",
+    },
+    industry: {
+      type: String,
+      default: "Other",
+    },
+    businessModel: {
+      type: String,
+      enum: ["SaaS", "Marketplace", "D2C", "B2B", "Service", "Other"],
+      default: "Other",
+    },
     status: {
       type: String,
-      enum: ["ideation", "prototype", "user_gathering", "revenue", "expanding", "mvp", "scaling", "launched"],
+      enum: ["ideation", "prototype", "early_users", "revenue", "expanding", "mvp", "scaling", "launched"],
       default: "ideation",
     },
     registrationType: {
       type: String,
-      enum: ["pvt_ltd", "llp", "unregistered"],
+      enum: ["pvt_ltd", "llp", "sole_proprietorship", "unregistered"],
       default: "unregistered",
+    },
+    equityOffering: {
+      type: String,
+      default: "0%",
+    },
+    kpis: {
+      users: { type: Number, default: 0 },
+      revenue: { type: Number, default: 0 },
+      growth: { type: Number, default: 0 }
     }
   },
   {

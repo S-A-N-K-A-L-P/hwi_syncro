@@ -13,17 +13,28 @@ import {
   ListChecks,
   Lightbulb,
   Zap,
-  LogOut
+  LogOut,
+  Rocket,
+  Target,
+  Users,
+  Layout,
+  Sparkles,
+  PieChart
 } from "lucide-react";
 import { signOut, useSession } from "next-auth/react";
 import ThemeModeToggle from "@/components/theme/ThemeModeToggle";
 
 const navigation = [
   {
+    group: "Growth", items: [
+      { name: "My Startup", href: "/my-startup", icon: Rocket },
+      { name: "Explore Missions", href: "/startups", icon: Search },
+    ]
+  },
+  {
     group: "Primary", items: [
       { name: "Feed", href: "/feed", icon: Home },
       { name: "My Ideas", href: "/ideas", icon: Lightbulb },
-      { name: "Discover", href: "/discover", icon: Search },
     ]
   },
   {
@@ -37,6 +48,17 @@ const navigation = [
       { name: "Settings", href: "/settings", icon: Settings },
     ]
   }
+];
+
+const startupNavigation = [
+  { name: "Overview", icon: Target, id: "overview" },
+  { name: "Team", icon: Users, id: "team" },
+  { name: "Product", icon: Layout, id: "product" },
+  { name: "Tasks", icon: ListChecks, id: "tasks" },
+  { name: "AI Assistant", icon: Sparkles, id: "assistant" },
+  { name: "Mentors", icon: Zap, id: "mentors" },
+  { name: "Funding", icon: PieChart, id: "funding" },
+  { name: "Settings", icon: Settings, id: "settings" },
 ];
 
 export default function Sidebar() {
@@ -57,20 +79,19 @@ export default function Sidebar() {
 
       {/* Navigation Groups */}
       <nav className="flex-1 px-3 space-y-8 mt-2">
-        {navigation.map((group) => (
-          <div key={group.group}>
+        {pathname.startsWith("/my-startup") ? (
+          <div>
             <h3 className="px-3 text-[10px] font-bold text-muted uppercase tracking-wider mb-2">
-              {group.group}
+               Mission Dashboard
             </h3>
             <div className="space-y-0.5">
-              {group.items.map((item) => {
-                const href = item.dynamic ? userProfileHref : item.href;
-                const isActive = pathname === href || (item.dynamic && pathname.startsWith("/profile/"));
+              {startupNavigation.map((item) => {
+                const isActive = pathname === `/my-startup/${item.id}` || (item.id === 'overview' && pathname === '/my-startup');
 
                 return (
                   <Link
-                    key={item.name}
-                    href={href}
+                    key={item.id}
+                    href={`/my-startup/${item.id}`}
                     className={`flex items-center gap-3 px-3 py-2 rounded-md text-[13px] font-medium transition-all group relative ${isActive
                       ? "text-foreground bg-[color-mix(in_srgb,var(--foreground)_4%,transparent)]"
                       : "text-muted hover:text-foreground hover:bg-[color-mix(in_srgb,var(--foreground)_3%,transparent)]"
@@ -86,11 +107,53 @@ export default function Sidebar() {
                 );
               })}
             </div>
+            
+            <div className="mt-8 pt-8 border-t border-border-subtle">
+               <Link
+                href="/feed"
+                className="flex items-center gap-3 px-3 py-2 rounded-md text-[13px] font-medium text-muted hover:text-foreground transition-all"
+               >
+                 <ArrowLeft className="w-4 h-4" />
+                 Return to Platform
+               </Link>
+            </div>
           </div>
-        ))}
+        ) : (
+          navigation.map((group) => (
+            <div key={group.group}>
+              <h3 className="px-3 text-[10px] font-bold text-muted uppercase tracking-wider mb-2">
+                {group.group}
+              </h3>
+              <div className="space-y-0.5">
+                {group.items.map((item) => {
+                  const href = item.dynamic ? userProfileHref : item.href;
+                  const isActive = pathname === href || (item.dynamic && pathname.startsWith("/profile/"));
+
+                  return (
+                    <Link
+                      key={item.name}
+                      href={href}
+                      className={`flex items-center gap-3 px-3 py-2 rounded-md text-[13px] font-medium transition-all group relative ${isActive
+                        ? "text-foreground bg-[color-mix(in_srgb,var(--foreground)_4%,transparent)]"
+                        : "text-muted hover:text-foreground hover:bg-[color-mix(in_srgb,var(--foreground)_3%,transparent)]"
+                        }`}
+                    >
+                      {isActive && (
+                        <div className="absolute left-0 w-0.5 h-4 bg-accent rounded-full shadow-[0_0_12px_var(--accent-glow)]" />
+                      )}
+                      <item.icon className={`w-4 h-4 transition-colors ${isActive ? "text-accent" : "text-muted group-hover:text-foreground"
+                        }`} />
+                      {item.name}
+                    </Link>
+                  );
+                })}
+              </div>
+            </div>
+          ))
+        )}
 
         {/* Admin Section */}
-        {session?.user && (session.user as any).role === "pixel_head" && (
+        {!pathname.startsWith("/my-startup") && session?.user && (session.user as any).role === "pixel_head" && (
           <div>
             <h3 className="px-3 text-[10px] font-bold text-muted uppercase tracking-wider mb-2">System</h3>
             <Link
