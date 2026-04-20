@@ -49,10 +49,11 @@ export default function ImageUpload({ onUpload, defaultImage, folder = "avatars"
         onUpload(data.secure_url);
         toast.success("Image uploaded successfully");
       } else {
-        throw new Error(data.error || "Upload failed");
+        const errorMsg = data.details || data.error || "Upload failed";
+        throw new Error(errorMsg);
       }
     } catch (err: any) {
-      console.error("Upload error:", err);
+      console.error("Client-side upload error:", err);
       toast.error(err.message || "Failed to upload image");
     } finally {
       setLoading(false);

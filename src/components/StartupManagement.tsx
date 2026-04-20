@@ -1,8 +1,23 @@
 "use client";
 
-import { useRouter, usePathname } from "next/navigation";
+import { useState } from "react";
+import { 
+  BarChart3, 
+  Users, 
+  Rocket, 
+  Target, 
+  ArrowUpRight, 
+  MoreHorizontal, 
+  ChevronRight,
+  ShieldCheck,
+  Zap,
+  Globe,
+  Clock,
+  ArrowRight,
+  Sparkles,
+  Settings
+} from "lucide-react";
 import { cn } from "@/lib/utils";
-import { StartupStageTracker } from "./StartupStageTracker";
 import { RequestManagement } from "./RequestManagement";
 import { StartupAssistant } from "./StartupAssistant";
 import { MentorshipHub } from "./MentorshipHub";
@@ -12,233 +27,204 @@ import { FundingTraction } from "./FundingTraction";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
 
-const TABS = [
-  { id: "overview", label: "Overview", icon: Target },
-  { id: "team", label: "Architects", icon: Users },
-  { id: "product", label: "Product Builder", icon: Layout },
-  { id: "tasks", label: "Task Engine", icon: ListChecks },
-  { id: "assistant", label: "AI Assistant", icon: Sparkles },
-  { id: "mentors", label: "Mentors", icon: HelpCircle },
-  { id: "funding", label: "Funding", icon: PieChart },
-  { id: "settings", label: "Settings", icon: Settings },
-];
-
-export function StartupManagement({ 
-  startup, 
-  isLeader,
-  initialTab = "overview"
-}: { 
-  startup: any; 
+interface StartupManagementProps {
+  startup: any;
+  activeTab: string;
   isLeader: boolean;
-  initialTab?: string;
-}) {
-  const router = useRouter();
-  const pathname = usePathname();
-  const activeTab = initialTab;
+}
 
-  const handleTabChange = (tabId: string) => {
-    router.push(`/my-startup/${tabId}`);
-  };
-
-  const getStageAdvice = () => {
-    switch (startup.status) {
-      case 'ideation': return "Focus on problem validation. Conduct at least 15 potential user interviews to verify your problem statement before building the prototype.";
-      case 'prototype': return "Execute rapid prototyping. Use the AI Product Builder to scaffold your MVP and test core functionality with a small cohort.";
-      case 'early_users': return "Optimize for retention. Track how frequently your 'Alpha' users return and fix friction points in the onboarding flow.";
-      case 'revenue': return "Stabilize unit economics. Ensure your CAC is lower than LTV and prepare your first professional pitch deck for investors.";
-      case 'scaling': return "Automate and delegate. Expand your 'Architect' team and focus on multi-channel growth strategies.";
-      default: return "Define your next milestone and assign tasks to your core team.";
-    }
-  };
-
+export function StartupManagement({ startup, activeTab, isLeader }: StartupManagementProps) {
   return (
-    <div className="flex flex-col lg:flex-row gap-8">
-      {/* Internal Sidebar for Startup Dashboard */}
-      <div className="w-full lg:w-64 space-y-4">
-        <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-6 shadow-sm">
-           <div className="flex items-center gap-4 mb-8">
-              <div className="w-12 h-12 rounded-xl bg-emerald-600 flex items-center justify-center text-white font-black text-xl shadow-lg">
-                {startup.name[0]}
-              </div>
-              <div>
-                <h2 className="text-sm font-black text-slate-900 dark:text-white uppercase tracking-tight truncate w-32">{startup.name}</h2>
-                <p className="text-[9px] font-bold text-emerald-600 uppercase tracking-widest">{startup.status}</p>
-              </div>
-           </div>
-           
-           <nav className="space-y-1">
-              {TABS.map((tab) => {
-                const Icon = tab.icon;
-                const isActive = activeTab === tab.id;
-                
-                return (
-                  <button
-                    key={tab.id}
-                    onClick={() => handleTabChange(tab.id)}
-                    className={cn(
-                      "w-full flex items-center gap-3 px-4 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all",
-                      isActive 
-                        ? "bg-slate-900 dark:bg-white text-white dark:text-slate-900 shadow-lg" 
-                        : "text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-50 dark:hover:bg-slate-800/50"
-                    )}
-                  >
-                    <Icon size={14} />
-                    {tab.label}
-                  </button>
-                );
-              })}
-           </nav>
+    <div className="space-y-8 pb-20 animate-in fade-in slide-in-from-bottom-4 duration-700">
+      {/* Header Section: Enterprise Dashboard Style */}
+      <div className="flex flex-col lg:flex-row justify-between items-start lg:items-end gap-6 pb-2 border-b border-border-subtle">
+        <div className="space-y-2">
+          <div className="flex items-center gap-3">
+             <div className="w-12 h-12 rounded-xl bg-surface-alt border border-border-subtle flex items-center justify-center text-accent font-bold text-xl shadow-sm">
+               {startup.logo ? (
+                 <Image src={startup.logo} alt="" width={48} height={48} className="w-full h-full object-cover rounded-xl" />
+               ) : (
+                 startup.name?.[0]
+               )}
+             </div>
+             <div>
+               <div className="flex items-center gap-2">
+                 <h1 className="text-2xl font-bold tracking-tight text-foreground">{startup.name}</h1>
+                 <span className="px-2 py-0.5 rounded-md bg-accent/10 text-accent text-[9px] font-bold uppercase tracking-widest border border-accent/20">
+                   {startup.status}
+                 </span>
+               </div>
+               <p className="text-xs font-medium text-muted mt-0.5 max-w-xl">{startup.tagline}</p>
+             </div>
+          </div>
         </div>
 
-        {isLeader && (
-           <div className="bg-emerald-600 rounded-3xl p-6 text-white space-y-4 shadow-xl shadow-emerald-500/20">
-              <h3 className="text-[10px] font-black uppercase tracking-widest opacity-80">Invite Code</h3>
-              <p className="text-2xl font-black tracking-widest italic">{startup.inviteCode}</p>
-              <Button size="sm" className="w-full bg-white text-emerald-600 hover:bg-emerald-50 font-black text-[10px] uppercase">
-                Copy Code
-              </Button>
-           </div>
-        )}
+        <div className="flex items-center gap-3">
+          <div className="flex -space-x-2 mr-4">
+             {startup.members?.slice(0, 4).map((m: any, i: number) => (
+               <div key={i} className="w-8 h-8 rounded-full border-2 border-background bg-surface-alt flex items-center justify-center text-[10px] font-bold text-muted ring-1 ring-border-subtle">
+                 {m.name?.[0] || 'U'}
+               </div>
+             ))}
+             {startup.members?.length > 4 && (
+               <div className="w-8 h-8 rounded-full border-2 border-background bg-slate-100 flex items-center justify-center text-[10px] font-bold text-slate-500">
+                 +{startup.members.length - 4}
+               </div>
+             )}
+          </div>
+          <Button variant="outline" className="h-10 rounded-lg text-xs font-bold gap-2 px-4 border-border-subtle hover:bg-surface-alt">
+            <Globe size={14} className="text-muted" /> Public Profile
+          </Button>
+          {isLeader && (
+             <Button className="h-10 rounded-lg bg-accent hover:bg-accent/90 text-background text-xs font-bold gap-2 px-6 shadow-lg shadow-accent/10">
+               <Zap size={14} className="fill-current" /> Execute Command
+             </Button>
+          )}
+        </div>
       </div>
 
-      {/* Main Content Area */}
-      <div className="flex-1 space-y-8 animate-in fade-in slide-in-from-right-4 duration-500">
-        {activeTab === "overview" && (
+      <div className="grid grid-cols-1 gap-8">
+        {/* Main Console View */}
+        {(activeTab === "overview" || !activeTab) && (
           <div className="space-y-8">
-            <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-[2.5rem] p-10 space-y-8 shadow-sm">
-              <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-                <div>
-                   <h3 className="text-xl font-black uppercase italic tracking-tighter text-slate-900 dark:text-white mb-1">Mission Roadmap</h3>
-                   <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Growth progression and current trajectory</p>
-                </div>
-                <span className="text-[10px] font-black uppercase text-emerald-600 bg-emerald-50 dark:bg-emerald-900/10 px-4 py-2 rounded-full border border-emerald-500/10">Stage: {startup.status}</span>
-              </div>
-              <StartupStageTracker currentStage={startup.status} />
-              
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-8 border-t border-slate-100 dark:border-slate-800">
-                 {[
-                   { label: "Active Users", value: startup.kpis?.users || 0, change: "+12%" },
-                   { label: "Revenue", value: `$${startup.kpis?.revenue || 0}`, change: "+5%" },
-                   { label: "Growth", value: `${startup.kpis?.growth || 0}%`, change: "+2%" },
-                 ].map((kpi, i) => (
-                   <div key={i} className="p-6 bg-slate-50 dark:bg-slate-800/30 rounded-2xl border border-slate-100 dark:border-slate-800 flex flex-col gap-1">
-                      <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">{kpi.label}</p>
-                      <p className="text-2xl font-black text-slate-900 dark:text-white italic">{kpi.value}</p>
-                      <p className="text-[9px] font-bold text-emerald-500">{kpi.change} This Week</p>
-                   </div>
-                 ))}
-              </div>
+            {/* KPI Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+               {[
+                 { label: "Deployment Health", value: "98.2%", icon: ShieldCheck, color: "text-emerald-500", trend: "+1.2%" },
+                 { label: "Active Contributors", value: startup.members?.length || 0, icon: Users, color: "text-blue-500", trend: "Stable" },
+                 { label: "Sprint Velocity", value: "14 pts", icon: Rocket, color: "text-purple-500", trend: "-2.4%" },
+                 { label: "Runway Index", value: "6.4mo", icon: BarChart3, color: "text-amber-500", trend: "+0.5%" },
+               ].map((stat) => (
+                 <div key={stat.label} className="enterprise-card p-6 flex flex-col justify-between hover:border-accent/30">
+                    <div className="flex justify-between items-start">
+                       <div className={cn("p-2 rounded-lg bg-surface-alt border border-border-subtle", stat.color)}>
+                         <stat.icon size={16} />
+                       </div>
+                       <span className={cn(
+                         "text-[10px] font-bold",
+                         stat.trend.startsWith('+') ? "text-emerald-500" : stat.trend === 'Stable' ? "text-muted" : "text-red-500"
+                       )}>{stat.trend}</span>
+                    </div>
+                    <div className="mt-4">
+                       <p className="text-[10px] font-medium text-muted uppercase tracking-wider">{stat.label}</p>
+                       <p className="text-xl font-bold mt-1">{stat.value}</p>
+                    </div>
+                 </div>
+               ))}
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-               <div className="p-10 bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-[2.5rem] space-y-6">
-                  <div className="flex items-center gap-3">
-                    <Briefcase className="text-emerald-500" size={24} />
-                    <h3 className="text-lg font-black uppercase italic tracking-tight">Mission Metadata</h3>
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+               {/* Strategic Roadmap */}
+               <div className="lg:col-span-2 enterprise-card p-8 space-y-8">
+                  <div className="flex justify-between items-center">
+                    <div className="space-y-1">
+                      <h3 className="text-sm font-bold uppercase tracking-wider flex items-center gap-2">
+                        <Target size={16} className="text-accent" /> Strategic Roadmap
+                      </h3>
+                      <p className="text-[10px] font-medium text-muted">Current objectives and mission-critical milestones</p>
+                    </div>
+                    <button className="text-muted hover:text-foreground p-1 transition-colors">
+                      <MoreHorizontal size={18} />
+                    </button>
                   </div>
-                  <div className="space-y-4">
-                     <div className="flex justify-between items-center py-3 border-b border-slate-50 dark:border-slate-800">
-                        <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Registration</span>
-                        <span className="text-[10px] font-black text-slate-900 dark:text-white uppercase">{startup.registrationType || "Not Registered"}</span>
-                     </div>
-                     <div className="flex justify-between items-center py-3 border-b border-slate-50 dark:border-slate-800">
-                        <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Business Model</span>
-                        <span className="text-[10px] font-black text-slate-900 dark:text-white uppercase">{startup.businessModel || "SaaS"}</span>
-                     </div>
-                     <div className="flex justify-between items-center py-3">
-                        <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Equity Pool</span>
-                        <span className="text-[10px] font-black text-emerald-600 uppercase">{startup.equityOffering || "0%"}</span>
-                     </div>
+
+                  <div className="space-y-6">
+                    {[
+                      { step: "Discovery & Validation", desc: "User interviews and problem-solution fit analysis", status: "completed", date: "Jan 12" },
+                      { step: "Core Infrastructure", desc: "Setting up base architecture and CI/CD pipelines", status: "active", date: "Present" },
+                      { step: "Alpha Deployment", desc: "Initial launch to closed group of 100 enterprise users", status: "pending", date: "Feb 15" },
+                      { step: "Scaling & Integration", desc: "Third-party API ecosystem and multi-region support", status: "pending", date: "Mar 30" },
+                    ].map((step, idx) => (
+                      <div key={step.step} className="flex gap-4 relative group">
+                        {idx !== 3 && <div className="absolute left-3 top-8 bottom-[-24px] w-0.5 bg-border-subtle" />}
+                        <div className={cn(
+                          "w-6 h-6 rounded-full border-2 flex items-center justify-center shrink-0 relative z-10 transition-colors",
+                          step.status === 'completed' ? "bg-accent border-accent text-background" : 
+                          step.status === 'active' ? "bg-background border-accent text-accent animate-pulse" : 
+                          "bg-background border-border-subtle text-muted"
+                        )}>
+                          {step.status === 'completed' ? <ShieldCheck size={12} /> : idx + 1}
+                        </div>
+                        <div className="flex-1 pb-2">
+                          <div className="flex justify-between items-start">
+                             <h4 className={cn("text-[13px] font-bold", step.status === 'pending' ? "text-muted" : "text-foreground")}>{step.step}</h4>
+                             <span className="text-[10px] font-mono font-medium text-muted uppercase">{step.date}</span>
+                          </div>
+                          <p className="text-[11px] text-muted mt-1 leading-relaxed max-w-md">{step.desc}</p>
+                        </div>
+                      </div>
+                    ))}
                   </div>
                </div>
 
-               <div className="p-10 bg-slate-900 text-white rounded-[2.5rem] space-y-6 relative overflow-hidden group">
-                  <div className="absolute top-0 right-0 p-10 opacity-10 group-hover:rotate-12 transition-transform">
-                    <Rocket size={120} />
+               {/* Advisor Panel */}
+               <div className="space-y-8">
+                  <div className="enterprise-card p-8 bg-surface-alt/30 border-accent/20 relative overflow-hidden group">
+                     <div className="absolute -right-4 -top-4 opacity-5 group-hover:rotate-12 transition-transform duration-700">
+                        <Zap size={140} />
+                     </div>
+                     <div className="relative z-10 space-y-6">
+                        <div className="flex items-center gap-3">
+                           <div className="w-8 h-8 rounded-lg bg-accent flex items-center justify-center text-background">
+                              <Sparkles size={16} />
+                           </div>
+                           <h3 className="text-xs font-bold uppercase tracking-widest text-accent">Active Protocol</h3>
+                        </div>
+                        <div className="space-y-4">
+                           <p className="text-[11px] font-bold text-foreground leading-relaxed">
+                              "Infrastructure scaling detected. Recommendation: Optimize database indices for global read-latency."
+                           </p>
+                           <Button variant="outline" className="w-full justify-between h-10 text-[10px] uppercase font-bold border-accent/20 hover:bg-accent hover:text-background transition-all">
+                              Deploy Solution <ChevronRight size={14} />
+                           </Button>
+                        </div>
+                     </div>
                   </div>
-                  <h3 className="text-lg font-black uppercase italic tracking-tight relative z-10">Next Strategic Move</h3>
-                  <p className="text-xs text-slate-400 font-medium leading-relaxed relative z-10">
-                    {getStageAdvice()}
-                  </p>
-                  <Button className="w-full h-14 bg-emerald-600 hover:bg-emerald-700 text-white font-black text-[10px] uppercase tracking-widest rounded-2xl relative z-10">
-                    Get AI Blueprint
-                  </Button>
+
+                  <div className="enterprise-card p-6 space-y-4 shadow-xl shadow-black/5 bg-accent/5 border-accent/10">
+                    <h3 className="text-[10px] font-bold uppercase tracking-widest text-muted">Upcoming Milestone</h3>
+                    <div className="flex items-center gap-3">
+                       <div className="w-10 h-10 rounded-lg bg-background border border-border-subtle flex items-center justify-center">
+                          <Clock size={16} className="text-accent" />
+                       </div>
+                       <div>
+                          <p className="text-xs font-bold text-foreground">Launch Beta Phase</p>
+                          <p className="text-[10px] text-muted font-medium">In 12 days • Global Market</p>
+                       </div>
+                    </div>
+                  </div>
                </div>
             </div>
           </div>
         )}
 
-        {activeTab === "team" && (
-           <div className="space-y-8">
-              <div className="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-[2.5rem] p-10 space-y-8 shadow-sm">
-                <div className="flex items-center justify-between border-b border-slate-50 dark:border-slate-800 pb-6">
-                   <h2 className="text-sm font-black text-slate-900 dark:text-white uppercase tracking-widest flex items-center gap-2">
-                     <Users size={18} className="text-emerald-600" /> Active Architects
-                   </h2>
-                   <span className="text-[10px] font-black text-slate-400 uppercase bg-slate-50 dark:bg-slate-800 px-4 py-2 rounded-full">{startup.members.length} Architects</span>
-                </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  {startup.members.map((member: any) => (
-                    <div key={member._id} className="p-6 bg-slate-50 dark:bg-slate-800/30 border border-slate-100 dark:border-slate-700/50 rounded-2xl flex items-center justify-between group">
-                      <div className="flex items-center gap-4">
-                        <div className="w-12 h-12 rounded-xl bg-white border border-slate-200 dark:border-slate-700 flex items-center justify-center font-bold relative overflow-hidden">
-                           {member.avatar ? <Image src={member.avatar} alt={member.name} fill className="object-cover" /> : member.name[0]}
-                        </div>
-                        <div>
-                           <p className="text-xs font-black text-slate-900 dark:text-white uppercase tracking-tight">{member.name}</p>
-                           <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">{member._id === startup.createdBy._id ? "Lead Architect" : "Engineer"}</p>
-                        </div>
-                      </div>
-                      <Button variant="ghost" size="icon" className="text-slate-300 hover:text-emerald-600"><Mail size={18} /></Button>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              {isLeader && (
-                <div className="space-y-6">
-                   <h3 className="text-sm font-black uppercase tracking-widest text-slate-900 dark:text-white px-4">Applicant Pool</h3>
-                   <RequestManagement startupId={startup._id} />
-                </div>
-              )}
-           </div>
-        )}
-
-        {/* Placeholder sections for the new deep features */}
-        {activeTab === "product" && (
-          <ProductBuilder />
-        )}
-
-        {activeTab === "tasks" && (
-           <TaskManager />
-        )}
-
+        {/* Modular Component Views */}
+        {activeTab === "team" && <RequestManagement startupId={startup._id} />}
+        {activeTab === "product" && <ProductBuilder />}
+        {activeTab === "tasks" && <TaskManager />}
         {activeTab === "assistant" && <StartupAssistant />}
         {activeTab === "mentors" && <MentorshipHub />}
+        {activeTab === "funding" && <FundingTraction />}
         
-        {activeTab === "funding" && (
-           <FundingTraction />
-        )}
-
         {activeTab === "settings" && (
-           <div className="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-[2.5rem] p-10 space-y-8 shadow-sm">
-             <h3 className="text-sm font-black uppercase tracking-widest">Ecosystem Settings</h3>
-             <div className="grid grid-cols-1 md:grid-cols-2 gap-8 pt-6 border-t border-slate-50 dark:border-slate-800">
-               <div className="space-y-4">
-                  <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Visibility</label>
-                  <select className="w-full bg-slate-50 dark:bg-slate-800 border-none rounded-xl p-4 text-xs font-bold uppercase tracking-widest">
-                    <option>Public Mission</option>
-                    <option>Stealth Mode</option>
-                  </select>
-               </div>
-               <div className="space-y-4">
-                  <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Recruitment status</label>
-                  <Button className="w-full h-14 bg-emerald-600 hover:bg-emerald-700 text-white font-black text-[10px] uppercase tracking-widest rounded-xl">
-                    Accepting Applications
-                  </Button>
-               </div>
-             </div>
-           </div>
+          <div className="enterprise-card p-10 space-y-8 bg-surface-alt/10">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-background border border-border-subtle flex items-center justify-center">
+                 <Settings size={20} className="text-muted" />
+              </div>
+              <h3 className="text-lg font-bold tracking-tight">System Configuration</h3>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+               {["Profile Visibility", "Member Permissions", "AI Core Preferences", "External Integrations"].map(opt => (
+                 <div key={opt} className="p-6 bg-background rounded-xl border border-border-subtle hover:border-accent/40 transition-colors cursor-pointer group">
+                    <div className="flex justify-between items-center">
+                       <span className="text-[13px] font-semibold text-foreground">{opt}</span>
+                       <ArrowRight size={14} className="text-muted group-hover:translate-x-1 group-hover:text-accent transition-all" />
+                    </div>
+                 </div>
+               ))}
+            </div>
+          </div>
         )}
       </div>
     </div>

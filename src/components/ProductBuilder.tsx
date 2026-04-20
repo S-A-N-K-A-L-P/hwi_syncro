@@ -2,190 +2,217 @@
 
 import { useState } from "react";
 import { 
-  Layout, 
-  Smartphone, 
-  Globe, 
   Cpu, 
+  Globe, 
+  Smartphone, 
   Sparkles, 
+  ChevronRight, 
+  Layout, 
+  Terminal, 
   Code2, 
-  Database, 
-  ShieldCheck, 
+  Zap,
   ArrowRight,
-  Loader2,
-  CheckCircle2
+  ShieldCheck,
+  Box,
+  Layers
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import { motion, AnimatePresence } from "framer-motion";
 
 const PRODUCT_TYPES = [
-  { 
-    id: "mobile", 
-    label: "Mobile App", 
-    icon: Smartphone, 
-    desc: "Build cross-platform iOS & Android solutions",
-    scaffolds: ["E-commerce", "Social Network", "SaaS Dashboard", "Fitness Tracker"]
-  },
   { 
     id: "web", 
     label: "Web Platform", 
     icon: Globe, 
-    desc: "High-performance Next.js or React web apps",
-    scaffolds: ["Marketplace", "Enterprise CRM", "Analytics Dashboard", "Community Board"]
+    desc: "Scaleable React/Next.js infrastructure with enterprise-grade SSR.",
+    options: ["SaaS Dashboard", "Marketplace Engine", "Data Visualization Suite"]
+  },
+  { 
+    id: "mobile", 
+    label: "Mobile Application", 
+    icon: Smartphone, 
+    desc: "Cross-platform Flutter/React Native solutions for global reach.",
+    options: ["Fintech Wallet", "Health Monitor", "Social Interaction Layer"]
   },
   { 
     id: "ai", 
-    label: "AI Engine", 
-    icon: Cpu, 
-    desc: "Neural networks and LLM-integrated services",
-    scaffolds: ["Chatbot API", "Image Processor", "Data Predictor", "Content Generator"]
-  },
+    label: "AI Environment", 
+    icon: Sparkles, 
+    desc: "Autonomous LLM agents and predictive intelligence models.",
+    options: ["Cognitive Assistant", "Predictive Analytics", "Dynamic Content Gen"]
+  }
 ];
 
 export function ProductBuilder() {
   const [selectedType, setSelectedType] = useState<string | null>(null);
-  const [selectedScaffold, setSelectedScaffold] = useState<string | null>(null);
-  const [isGenerating, setIsGenerating] = useState(false);
-  const [isCompleted, setIsCompleted] = useState(false);
-
-  const handleGenerate = () => {
-    setIsGenerating(true);
-    setTimeout(() => {
-      setIsGenerating(false);
-      setIsCompleted(true);
-    }, 3000);
-  };
-
-  if (isCompleted) {
-    return (
-      <motion.div 
-        initial={{ opacity: 0, scale: 0.9 }}
-        animate={{ opacity: 1, scale: 1 }}
-        className="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-[2.5rem] p-12 text-center space-y-8 shadow-sm"
-      >
-        <div className="w-20 h-20 bg-emerald-50 dark:bg-emerald-900/20 rounded-3xl flex items-center justify-center mx-auto text-emerald-600 border border-emerald-500/20">
-          <CheckCircle2 size={40} />
-        </div>
-        <div className="space-y-2">
-          <h3 className="text-2xl font-black uppercase italic tracking-tighter">Architectural Blueprint Ready</h3>
-          <p className="text-xs text-slate-500 font-medium uppercase tracking-widest px-10">I have generated the core tech stack, entry points, and database schema for your "{selectedScaffold}" project.</p>
-        </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-lg mx-auto pt-6">
-           <div className="p-6 bg-slate-50 dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-800 text-left">
-              <p className="text-[10px] font-black text-slate-400 uppercase mb-2">Tech Stack</p>
-              <p className="text-xs font-bold uppercase">Next.js 16, Tailwind, Prisma, PostgreSQL</p>
-           </div>
-           <div className="p-6 bg-slate-50 dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-800 text-left">
-              <p className="text-[10px] font-black text-slate-400 uppercase mb-2">Structure</p>
-              <p className="text-xs font-bold uppercase">Modular Monolith architecture</p>
-           </div>
-        </div>
-        <div className="flex gap-4 justify-center pt-6">
-           <Button className="h-14 px-8 bg-slate-900 dark:bg-white text-white dark:text-slate-900 rounded-2xl font-black text-[10px] uppercase tracking-widest shadow-xl">
-             Download Source (.zip)
-           </Button>
-           <Button variant="outline" className="h-14 px-8 rounded-2xl border-2 font-black text-[10px] uppercase tracking-widest" onClick={() => setIsCompleted(false)}>
-             Build Another
-           </Button>
-        </div>
-      </motion.div>
-    );
-  }
+  const [step, setStep] = useState(1);
 
   return (
-    <div className="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-[2.5rem] p-10 space-y-10 shadow-sm relative overflow-hidden">
-      <div className="flex justify-between items-start">
-        <div className="space-y-1">
-          <h3 className="text-xl font-black uppercase italic tracking-tighter text-slate-900 dark:text-white flex items-center gap-2">
-            <Sparkles size={20} className="text-emerald-600" /> AI Product Builder
-          </h3>
-          <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Select a mission category to begin scaffolding</p>
+    <div className="space-y-8 pb-10 animate-in fade-in slide-in-from-bottom-2 duration-700">
+      {/* Infrastructure Blueprint Header */}
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 pb-6 border-b border-border-subtle">
+         <div className="space-y-1">
+            <h3 className="text-lg font-bold tracking-tight">Product Architecture Engine</h3>
+            <p className="text-[11px] font-medium text-muted uppercase tracking-widest">Initialize and scaffold mission-critical software infrastructure</p>
+         </div>
+         <div className="flex items-center gap-2 px-3 py-1.5 bg-accent/5 rounded-lg border border-accent/20">
+            <Layers size={14} className="text-accent" />
+            <span className="text-[10px] font-bold text-accent uppercase tracking-widest leading-none">Blueprint Active</span>
+         </div>
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+        {/* Step Navigation Sidebar */}
+        <div className="hidden lg:block space-y-6">
+           {[
+             { id: 1, label: "Core Environment", icon: Box },
+             { id: 2, label: "Architectural Pattern", icon: Layout },
+             { id: 3, label: "Data Schema & Auth", icon: ShieldCheck },
+             { id: 4, label: "Infrastructure Deployment", icon: Zap },
+           ].map((s) => (
+             <div key={s.id} className={cn(
+               "flex items-center gap-4 p-4 rounded-xl transition-all border",
+               step === s.id ? "bg-surface-alt border-border-subtle shadow-sm" : "border-transparent text-muted opacity-60"
+             )}>
+                <div className={cn(
+                  "w-8 h-8 rounded-lg flex items-center justify-center border",
+                  step === s.id ? "bg-background border-accent text-accent" : "bg-transparent border-border-subtle text-muted"
+                )}>
+                   <s.icon size={16} />
+                </div>
+                <div className="flex flex-col">
+                   <span className="text-[10px] font-bold uppercase tracking-widest leading-none">Phase 0{s.id}</span>
+                   <span className={cn("text-[12px] font-bold mt-1", step === s.id ? "text-foreground" : "text-muted")}>{s.label}</span>
+                </div>
+             </div>
+           ))}
+        </div>
+
+        {/* Main Configuration Console */}
+        <div className="lg:col-span-3 space-y-8">
+          {step === 1 && (
+            <div className="space-y-6 animate-in fade-in slide-in-from-right-4 duration-500">
+               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                 {PRODUCT_TYPES.map((type) => (
+                   <button
+                     key={type.id}
+                     onClick={() => {
+                        setSelectedType(type.id);
+                     }}
+                     className={cn(
+                       "enterprise-card p-8 text-left space-y-6 group hover:border-accent/40",
+                       selectedType === type.id ? "border-accent ring-1 ring-accent/20 shadow-lg" : ""
+                     )}
+                   >
+                     <div className={cn(
+                       "w-12 h-12 rounded-xl flex items-center justify-center transition-all group-hover:scale-110",
+                       selectedType === type.id ? "bg-accent text-background" : "bg-surface-alt border border-border-subtle text-muted"
+                     )}>
+                       <type.icon size={24} />
+                     </div>
+                     <div className="space-y-2">
+                       <h4 className="text-[13px] font-bold uppercase tracking-wide">{type.label}</h4>
+                       <p className="text-[11px] text-muted leading-relaxed">{type.desc}</p>
+                     </div>
+                     <div className={cn(
+                       "pt-4 flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest transition-colors",
+                       selectedType === type.id ? "text-accent" : "text-muted group-hover:text-accent"
+                     )}>
+                       Select Pattern <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
+                     </div>
+                   </button>
+                 ))}
+               </div>
+
+               {selectedType && (
+                  <div className="enterprise-card p-10 space-y-8 bg-surface-alt/20 border-accent/10 animate-in zoom-in-95 duration-500">
+                     <div className="flex justify-between items-center">
+                        <div className="space-y-1">
+                           <h4 className="text-sm font-bold uppercase tracking-widest text-accent">Configuration Required</h4>
+                           <p className="text-[11px] font-medium text-muted">Initialize the selected core environment patterns.</p>
+                        </div>
+                        <Terminal size={20} className="text-muted" />
+                     </div>
+                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        {PRODUCT_TYPES.find(t => t.id === selectedType)?.options.map(opt => (
+                           <div key={opt} className="p-4 bg-background border border-border-subtle rounded-xl flex items-center justify-between group cursor-pointer hover:border-accent/50 transition-all">
+                              <span className="text-[12px] font-semibold text-foreground">{opt}</span>
+                              <div className="w-6 h-6 rounded-md bg-surface-alt flex items-center justify-center group-hover:bg-accent group-hover:text-background transition-colors">
+                                 <PlusCircle size={14} />
+                              </div>
+                           </div>
+                        ))}
+                     </div>
+                     <div className="pt-6 border-t border-border-subtle flex justify-end">
+                        <Button 
+                          onClick={() => setStep(2)}
+                          className="h-12 px-10 bg-accent hover:bg-accent/90 text-background rounded-lg text-xs font-bold tracking-tight shadow-xl shadow-accent/10"
+                        >
+                           Proceed to Architecture Phase
+                        </Button>
+                     </div>
+                  </div>
+               )}
+            </div>
+          )}
+
+          {step > 1 && (
+             <div className="enterprise-card p-20 text-center space-y-6 animate-in zoom-in-95 duration-700">
+                <div className="w-20 h-20 bg-accent/5 rounded-3xl flex items-center justify-center mx-auto text-accent border border-accent/10">
+                   <Code2 size={40} className="animate-pulse" />
+                </div>
+                <div className="space-y-2">
+                   <h3 className="text-xl font-bold tracking-tight text-foreground">Generating Structural Scaffolding</h3>
+                   <p className="text-xs text-muted max-w-sm mx-auto leading-relaxed">AI is currently provisioning your enterprise environment based on established mission patterns.</p>
+                </div>
+                <div className="flex justify-center pt-4">
+                   <Button 
+                     variant="outline" 
+                     onClick={() => setStep(1)}
+                     className="h-10 rounded-lg text-xs font-bold border-border-subtle"
+                   >
+                     Abort Pipeline
+                   </Button>
+                </div>
+             </div>
+          )}
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {PRODUCT_TYPES.map((type) => {
-          const Icon = type.icon;
-          const isActive = selectedType === type.id;
-          
-          return (
-            <button
-              key={type.id}
-              onClick={() => { setSelectedType(type.id); setSelectedScaffold(null); }}
-              className={cn(
-                "p-8 rounded-[2rem] border-2 transition-all text-left flex flex-col justify-between min-h-[220px] group",
-                isActive 
-                  ? "bg-slate-900 border-slate-900 text-white shadow-2xl" 
-                  : "bg-slate-50 dark:bg-slate-800/50 border-slate-100 dark:border-slate-800 hover:border-emerald-500/30"
-              )}
-            >
-              <div className={cn(
-                "w-12 h-12 rounded-2xl flex items-center justify-center transition-all",
-                isActive ? "bg-emerald-600 text-white" : "bg-white dark:bg-slate-950 text-slate-400 border border-slate-100 dark:border-slate-800"
-              )}>
-                <Icon size={24} />
-              </div>
-              <div className="space-y-2">
-                <h4 className="font-black uppercase italic tracking-tight">{type.label}</h4>
-                <p className={cn("text-[9px] font-bold uppercase tracking-widest leading-relaxed", isActive ? "text-slate-400" : "text-slate-500")}>
-                  {type.desc}
-                </p>
-              </div>
-            </button>
-          );
-        })}
+      {/* Infrastructure Integrity Layer */}
+      <div className="enterprise-card p-10 bg-surface-alt/10 border-border-subtle flex flex-col md:flex-row items-center justify-between gap-8">
+         <div className="flex items-center gap-5">
+            <div className="w-12 h-12 rounded-xl bg-background border border-border-subtle flex items-center justify-center text-muted shadow-sm">
+               <ShieldCheck size={28} />
+            </div>
+            <div>
+               <h4 className="text-sm font-bold text-foreground leading-none">Security Hardened Blueprints</h4>
+               <p className="text-[11px] text-muted font-medium mt-2">All generated architecture adheres to high-end infrastructure security protocols.</p>
+            </div>
+         </div>
+         <Button variant="outline" className="h-11 px-8 rounded-lg text-xs font-bold border-border-subtle hover:bg-accent hover:text-background transition-all">
+            Audit Infrastructure
+         </Button>
       </div>
-
-      <AnimatePresence>
-        {selectedType && (
-          <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: 'auto' }}
-            exit={{ opacity: 0, height: 0 }}
-            className="space-y-8 pt-6 border-t border-slate-50 dark:border-slate-800"
-          >
-            <div className="space-y-4">
-               <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Select Base Blueprint</label>
-               <div className="flex flex-wrap gap-3">
-                  {PRODUCT_TYPES.find(t => t.id === selectedType)?.scaffolds.map(s => (
-                    <button
-                      key={s}
-                      onClick={() => setSelectedScaffold(s)}
-                      className={cn(
-                        "px-6 py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest border transition-all",
-                        selectedScaffold === s 
-                          ? "bg-emerald-600 border-emerald-600 text-white shadow-lg" 
-                          : "bg-white dark:bg-slate-950 border-slate-100 dark:border-slate-800 text-slate-500 hover:border-emerald-500/50"
-                      )}
-                    >
-                      {s}
-                    </button>
-                  ))}
-               </div>
-            </div>
-
-            <div className="bg-slate-900 rounded-[2rem] p-10 text-white relative overflow-hidden group">
-               <div className="absolute top-0 right-0 p-10 opacity-10 group-hover:rotate-12 transition-transform">
-                 <Code2 size={100} />
-               </div>
-               <div className="relative z-10 space-y-6">
-                 <div>
-                    <h4 className="text-xl font-black uppercase italic tracking-tighter">Initialize Scaffolding?</h4>
-                    <p className="text-xs text-slate-400 font-medium uppercase mt-2">AI will generate UI wireframes, a suggested tech stack, and a basic code scaffold for your {selectedScaffold}.</p>
-                 </div>
-                 <Button 
-                   onClick={handleGenerate}
-                   disabled={!selectedScaffold || isGenerating}
-                   className="h-14 px-10 bg-emerald-600 hover:bg-emerald-700 text-white rounded-2xl font-black text-xs uppercase tracking-[0.2em] shadow-2xl shadow-emerald-500/20 active:scale-95 transition-all"
-                 >
-                   {isGenerating ? <Loader2 className="animate-spin mr-2" size={18} /> : null}
-                   {isGenerating ? "GENERATING ARCHITECTURE..." : "EXECUTE SCAFFOLD GENERATOR"}
-                 </Button>
-               </div>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
     </div>
+  );
+}
+
+function PlusCircle({ size }: { size: number }) {
+  return (
+    <svg 
+      width={size} 
+      height={size} 
+      viewBox="0 0 24 24" 
+      fill="none" 
+      stroke="currentColor" 
+      strokeWidth="2.5" 
+      strokeLinecap="round" 
+      strokeLinejoin="round"
+    >
+      <circle cx="12" cy="12" r="10" />
+      <path d="M12 8v8" />
+      <path d="M8 12h8" />
+    </svg>
   );
 }

@@ -56,6 +56,9 @@ export async function POST(req: NextRequest) {
       return sendError("Unauthorized", 401);
     }
 
+    const body = await req.json();
+    console.log("POST /api/startups payload:", JSON.stringify(body, null, 2));
+
     const { 
       name, 
       description, 
@@ -71,9 +74,15 @@ export async function POST(req: NextRequest) {
       registrationType,
       equityOffering,
       status
-    } = await req.json();
+    } = body;
 
     if (!name || !description || !techStack || !primaryTechnology) {
+      console.log("Missing fields check failed:", {
+        hasName: !!name,
+        hasDescription: !!description,
+        hasTechStack: !!techStack,
+        hasPrimaryTech: !!primaryTechnology
+      });
       return sendError("Missing required fields (name, description, techStack, primaryTechnology)", 400);
     }
 
@@ -81,7 +90,8 @@ export async function POST(req: NextRequest) {
 
     // Check if user already has a startup
     const userDoc = await User.findById(authUser.id);
-    if (userDoc.currentStartup) {
+    console.log("User current startup check:", { userId: authUser.id, currentStartup: userDoc?.currentStartup });
+    if (userDoc?.currentStartup) {
       return sendError("You are already leading or part of a startup. Leave it first.", 400);
     }
 

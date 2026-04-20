@@ -18,11 +18,16 @@ import {
   ArrowLeft,
   Layout,
   PieChart,
-  ShieldAlert
+  ShieldCheck,
+  Globe,
+  Database,
+  Layers,
+  Zap
 } from "lucide-react";
 import { toast } from "sonner";
 import ImageUpload from "@/components/common/ImageUpload";
 import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
 
 interface Niche {
   id: string;
@@ -32,10 +37,10 @@ interface Niche {
 }
 
 const STEPS = [
-  { id: "identity", label: "The Soul", icon: Target },
-  { id: "structure", label: "The Structure", icon: Layout },
-  { id: "blueprint", label: "The Blueprint", icon: PieChart },
-  { id: "team", label: "The Team", icon: Users },
+  { id: "identity", label: "Strategic Identity", icon: Target },
+  { id: "structure", label: "Market Architecture", icon: Globe },
+  { id: "blueprint", label: "Capital Blueprint", icon: PieChart },
+  { id: "team", label: "Human Capital", icon: Users },
 ];
 
 export default function CreateStartupPage() {
@@ -89,10 +94,22 @@ export default function CreateStartupPage() {
   };
 
   const nextStep = () => {
-    if (currentStep === 0 && (!formData.name || !formData.tagline)) {
-      toast.error("Name and Tagline are required");
+    if (currentStep === 0) {
+      if (!formData.name || !formData.tagline) {
+        toast.error("Venture Name and Tagline are required for initiation");
+        return;
+      }
+      if (!formData.problemStatement) {
+        toast.error("Mission Critical Statement is required");
+        return;
+      }
+    }
+    
+    if (currentStep === 1 && !formData.industry) {
+      toast.error("Please select a Market Vertical to proceed");
       return;
     }
+
     if (currentStep < STEPS.length - 1) setCurrentStep(prev => prev + 1);
   };
 
@@ -102,62 +119,80 @@ export default function CreateStartupPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (!formData.primaryTechnology) {
+      toast.error("Primary Infrastructure Language must be selected");
+      return;
+    }
+
+    if (formData.techStack.length === 0) {
+      toast.error("Select at least one Strategic Stack component");
+      return;
+    }
+
     setLoading(true);
 
     try {
+      // Ensure description is populated for backend requirements
+      const payload = {
+        ...formData,
+        description: formData.description || formData.problemStatement
+      };
+
       const res = await fetch("/api/startups", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(payload),
       });
 
       const data = await res.json();
 
       if (res.ok) {
-        toast.success("Startup registered successfully!");
+        toast.success("Venture initialized in the system");
         router.push(`/my-startup`);
       } else {
-        toast.error(data.message || "Something went wrong");
+        toast.error(data.message || "Initialization failed");
       }
     } catch (err) {
-      toast.error("An error occurred. Please try again.");
+      toast.error("Platform communication error. Verify connection.");
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="max-w-4xl mx-auto py-12 px-6">
-      <div className="mb-12 flex flex-col md:flex-row md:items-end justify-between gap-6">
-        <div className="space-y-4">
-          <div className="inline-flex items-center gap-2 px-3 py-1 bg-emerald-500/10 border border-emerald-500/20 rounded-full text-emerald-600 dark:text-emerald-400 text-[10px] font-black uppercase tracking-widest">
-            <Rocket size={12} className="animate-pulse" />
-            Founder Journey
+    <div className="max-w-4xl mx-auto py-16 px-6 animate-in fade-in duration-1000">
+      <div className="mb-14 flex flex-col md:flex-row md:items-end justify-between gap-8 border-b border-border-subtle pb-10">
+        <div className="space-y-3">
+          <div className="inline-flex items-center gap-2 px-3 py-1 bg-accent/5 border border-accent/20 rounded-lg text-accent text-[10px] font-bold uppercase tracking-widest">
+            <Rocket size={14} className="animate-pulse" />
+            Strategic Initiation Phase
           </div>
-          <h1 className="text-4xl md:text-5xl font-black text-slate-900 dark:text-white uppercase italic tracking-tighter leading-none">
-            Register <span className="text-emerald-600">Startup</span>
+          <h1 className="text-4xl font-bold text-foreground tracking-tight">
+            Register <span className="text-accent italic">Venture</span>
           </h1>
+          <p className="text-muted text-sm font-medium">Provision your startup metadata into the global execution matrix.</p>
         </div>
         
-        {/* Step Indicator */}
-        <div className="flex items-center gap-2">
+        {/* Step Indicator - High Density */}
+        <div className="flex items-center gap-1.5">
           {STEPS.map((step, i) => (
             <div key={step.id} className="flex items-center">
               <div className={cn(
-                "w-8 h-8 rounded-lg flex items-center justify-center transition-all duration-500",
-                i <= currentStep ? "bg-emerald-600 text-white shadow-lg shadow-emerald-500/20" : "bg-slate-100 dark:bg-slate-800 text-slate-400"
+                "w-10 h-10 rounded-xl flex items-center justify-center transition-all duration-500 border",
+                i <= currentStep ? "bg-accent border-accent text-background shadow-lg shadow-accent/10" : "bg-surface-alt border-border-subtle text-muted"
               )}>
-                <step.icon size={16} />
+                <step.icon size={18} />
               </div>
               {i < STEPS.length - 1 && (
-                <div className={cn("w-6 h-0.5 mx-1", i < currentStep ? "bg-emerald-600" : "bg-slate-100 dark:bg-slate-800")} />
+                <div className={cn("w-4 h-0.5 mx-0.5 rounded-full", i < currentStep ? "bg-accent" : "bg-border-subtle")} />
               )}
             </div>
           ))}
         </div>
       </div>
 
-      <form onSubmit={handleSubmit} className="space-y-10">
+      <form onSubmit={handleSubmit} className="space-y-12">
         <AnimatePresence mode="wait">
           {currentStep === 0 && (
             <motion.div
@@ -167,49 +202,49 @@ export default function CreateStartupPage() {
               exit={{ opacity: 0, x: -20 }}
               className="space-y-8"
             >
-              <div className="bg-white dark:bg-slate-950 p-8 md:p-12 rounded-[3rem] border border-slate-100 dark:border-slate-800 shadow-2xl shadow-emerald-500/5 space-y-8">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
-                  <div className="space-y-8">
+              <div className="enterprise-card p-10 md:p-14 space-y-10 bg-surface-alt/10">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+                  <div className="space-y-10">
                     <ImageUpload 
-                      label="Launchpad Emblem" 
+                      label="Corporate Emblem" 
                       folder="logos" 
                       defaultImage={formData.logo}
-                      onUpload={(url) => setFormData({ ...formData, logo: url })} 
+                      onUpload={(url) => setFormData(prev => ({ ...prev, logo: url }))} 
                     />
-                    <div className="space-y-4">
-                      <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Startup Name</label>
+                    <div className="space-y-3">
+                      <label className="text-[10px] font-bold text-muted uppercase tracking-[0.2em] ml-1">Official Venture Name</label>
                       <input
                         type="text"
                         name="name"
                         required
                         value={formData.name}
                         onChange={handleChange}
-                        placeholder="e.g. BioForge Dynamics"
-                        className="w-full px-6 py-5 bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-2xl focus:border-emerald-500/50 outline-none transition-all text-sm font-bold"
+                        placeholder="e.g. Nexus Core Technologies"
+                        className="w-full px-5 py-4 bg-background border border-border-subtle rounded-xl focus:border-accent/40 outline-none transition-all text-sm font-semibold"
                       />
                     </div>
                   </div>
-                  <div className="space-y-8">
-                    <div className="space-y-4">
-                      <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Tagline (1-line pitch)</label>
+                  <div className="space-y-10">
+                    <div className="space-y-3">
+                      <label className="text-[10px] font-bold text-muted uppercase tracking-[0.2em] ml-1">Executive Summary (1-line)</label>
                       <input
                         type="text"
                         name="tagline"
                         required
                         value={formData.tagline}
                         onChange={handleChange}
-                        placeholder="e.g. Decarbonizing the aviation industry"
-                        className="w-full px-6 py-5 bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-2xl focus:border-emerald-500/50 outline-none transition-all text-sm font-bold"
+                        placeholder="e.g. Autonomous infrastructure for global trade"
+                        className="w-full px-5 py-4 bg-background border border-border-subtle rounded-xl focus:border-accent/40 outline-none transition-all text-sm font-semibold italic"
                       />
                     </div>
-                    <div className="space-y-4">
-                      <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Problem Statement</label>
+                    <div className="space-y-3">
+                      <label className="text-[10px] font-bold text-muted uppercase tracking-[0.2em] ml-1">Mission Critical Statement</label>
                       <textarea
                         name="problemStatement"
                         value={formData.problemStatement}
                         onChange={handleChange}
-                        placeholder="What critical issue are you solving?"
-                        className="w-full px-6 py-5 bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-2xl focus:border-emerald-500/50 outline-none transition-all text-sm font-bold min-h-[120px] resize-none"
+                        placeholder="What systemic deficit are you addressing?"
+                        className="w-full px-5 py-4 bg-background border border-border-subtle rounded-xl focus:border-accent/40 outline-none transition-all text-sm font-semibold min-h-[140px] resize-none leading-relaxed"
                       />
                     </div>
                   </div>
@@ -226,41 +261,51 @@ export default function CreateStartupPage() {
               exit={{ opacity: 0, x: -20 }}
               className="space-y-8"
             >
-              <div className="bg-white dark:bg-slate-950 p-8 md:p-12 rounded-[3rem] border border-slate-100 dark:border-slate-800 shadow-2xl shadow-emerald-500/5 space-y-8">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                  <div className="space-y-4">
-                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Industry Niche</label>
-                    <select
-                      name="industry"
-                      required
-                      value={formData.industry}
-                      onChange={handleChange}
-                      className="w-full px-6 py-5 bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-2xl outline-none text-sm font-bold appearance-none cursor-pointer"
-                    >
-                      <option value="">Select Niche</option>
-                      {niches.map(n => <option key={n.id} value={n.id}>{n.label}</option>)}
-                    </select>
+              <div className="enterprise-card p-10 md:p-14 space-y-10 bg-surface-alt/10">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+                  <div className="space-y-3">
+                    <label className="text-[10px] font-bold text-muted uppercase tracking-[0.2em] ml-1">Market Vertical</label>
+                    <div className="relative">
+                      <select
+                        name="industry"
+                        required
+                        value={formData.industry}
+                        onChange={handleChange}
+                        className="w-full px-5 py-4 bg-background border border-border-subtle rounded-xl outline-none text-sm font-bold appearance-none cursor-pointer focus:border-accent/40"
+                      >
+                        <option value="">Select Vertical</option>
+                        {niches.map(n => <option key={n.id} value={n.id}>{n.label}</option>)}
+                      </select>
+                      <div className="absolute right-5 top-1/2 -translate-y-1/2 pointer-events-none text-muted">
+                        <ArrowRight size={14} className="rotate-90" />
+                      </div>
+                    </div>
                   </div>
-                  <div className="space-y-4">
-                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Business Model</label>
-                    <select
-                      name="businessModel"
-                      value={formData.businessModel}
-                      onChange={handleChange}
-                      className="w-full px-6 py-5 bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-2xl outline-none text-sm font-bold appearance-none cursor-pointer"
-                    >
-                      {["SaaS", "Marketplace", "D2C", "B2B", "Service", "Other"].map(m => <option key={m} value={m}>{m}</option>)}
-                    </select>
+                  <div className="space-y-3">
+                    <label className="text-[10px] font-bold text-muted uppercase tracking-[0.2em] ml-1">Monetization Pattern</label>
+                    <div className="relative">
+                       <select
+                        name="businessModel"
+                        value={formData.businessModel}
+                        onChange={handleChange}
+                        className="w-full px-5 py-4 bg-background border border-border-subtle rounded-xl outline-none text-sm font-bold appearance-none cursor-pointer focus:border-accent/40"
+                      >
+                        {["SaaS", "Marketplace", "D2C", "B2B", "Infrastructure", "Other"].map(m => <option key={m} value={m}>{m}</option>)}
+                      </select>
+                       <div className="absolute right-5 top-1/2 -translate-y-1/2 pointer-events-none text-muted">
+                        <ArrowRight size={14} className="rotate-90" />
+                      </div>
+                    </div>
                   </div>
                 </div>
-                <div className="space-y-4">
-                  <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Proposed Solution</label>
+                <div className="space-y-3">
+                  <label className="text-[10px] font-bold text-muted uppercase tracking-[0.2em] ml-1">Systemic Solution Overview</label>
                   <textarea
                     name="solutionOverview"
                     value={formData.solutionOverview}
                     onChange={handleChange}
-                    placeholder="How does your product solve the problem?"
-                    className="w-full px-6 py-5 bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-2xl outline-none text-sm font-bold min-h-[120px] resize-none"
+                    placeholder="Describe your architectural solution and market edge..."
+                    className="w-full px-5 py-4 bg-background border border-border-subtle rounded-xl focus:border-accent/40 outline-none text-sm font-semibold min-h-[140px] resize-none leading-relaxed"
                   />
                 </div>
               </div>
@@ -275,10 +320,10 @@ export default function CreateStartupPage() {
               exit={{ opacity: 0, x: -20 }}
               className="space-y-8"
             >
-              <div className="bg-white dark:bg-slate-950 p-8 md:p-12 rounded-[3rem] border border-slate-100 dark:border-slate-800 shadow-2xl shadow-emerald-500/5 space-y-10">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              <div className="enterprise-card p-10 md:p-14 space-y-10 bg-surface-alt/10">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
                   <div className="space-y-4">
-                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Current Stage</label>
+                    <label className="text-[10px] font-bold text-muted uppercase tracking-[0.2em] ml-1">Lifecycle Positioning</label>
                     <div className="grid grid-cols-1 gap-2">
                       {["ideation", "prototype", "early_users", "revenue", "scaling"].map(s => (
                         <button
@@ -286,43 +331,54 @@ export default function CreateStartupPage() {
                           type="button"
                           onClick={() => setFormData({...formData, status: s})}
                           className={cn(
-                            "px-6 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all text-left border",
-                            formData.status === s ? "bg-emerald-600 border-emerald-600 text-white" : "bg-slate-50 dark:bg-slate-900 border-slate-100 dark:border-slate-800 text-slate-500"
+                            "px-6 py-3.5 rounded-xl text-[10px] font-bold uppercase tracking-widest transition-all text-left border relative group",
+                            formData.status === s 
+                              ? "bg-accent border-accent text-background shadow-lg shadow-accent/10" 
+                              : "bg-background border-border-subtle text-muted hover:border-accent/30"
                           )}
                         >
+                          {formData.status === s && <div className="absolute right-4 top-1/2 -translate-y-1/2"><Zap size={14} className="fill-current" /></div>}
                           {s.replace('_', ' ')}
                         </button>
                       ))}
                     </div>
                   </div>
-                  <div className="space-y-8">
+                  <div className="space-y-10">
                     <div className="space-y-4">
-                      <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Registration Type</label>
-                      <select
-                        name="registrationType"
-                        value={formData.registrationType}
-                        onChange={handleChange}
-                        className="w-full px-6 py-5 bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-2xl outline-none text-sm font-bold appearance-none cursor-pointer"
-                      >
-                        <option value="unregistered">Not Registered</option>
-                        <option value="pvt_ltd">Private Limited</option>
-                        <option value="llp">LLP</option>
-                        <option value="sole_proprietorship">Sole Proprietorship</option>
-                      </select>
+                      <label className="text-[10px] font-bold text-muted uppercase tracking-[0.2em] ml-1">Corporate Registration</label>
+                      <div className="relative">
+                        <select
+                          name="registrationType"
+                          value={formData.registrationType}
+                          onChange={handleChange}
+                          className="w-full px-5 py-4 bg-background border border-border-subtle rounded-xl outline-none text-sm font-bold appearance-none cursor-pointer focus:border-accent/40"
+                        >
+                          <option value="unregistered">Non-Registered Project</option>
+                          <option value="pvt_ltd">Private Limited Entity</option>
+                          <option value="llp">Limited Liability Partnership</option>
+                          <option value="sole_proprietorship">Principal Proprietorship</option>
+                        </select>
+                        <div className="absolute right-5 top-1/2 -translate-y-1/2 pointer-events-none text-muted">
+                           <ArrowRight size={14} className="rotate-90" />
+                        </div>
+                      </div>
                     </div>
                     <div className="space-y-4">
-                      <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Equity Offering (Optional)</label>
+                      <label className="text-[10px] font-bold text-muted uppercase tracking-[0.2em] ml-1">Strategic Equity Pool</label>
                       <div className="relative">
-                         <PieChart size={18} className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-400" />
+                         <div className="absolute left-5 top-1/2 -translate-y-1/2 text-accent">
+                            <PieChart size={18} />
+                         </div>
                          <input
                           type="text"
                           name="equityOffering"
                           value={formData.equityOffering}
                           onChange={handleChange}
-                          placeholder="e.g. 5-10%"
-                          className="w-full pl-14 pr-6 py-5 bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-2xl outline-none text-sm font-bold"
+                          placeholder="e.g. 15% Strategic Allocation"
+                          className="w-full pl-14 pr-6 py-5 bg-background border border-border-subtle rounded-xl focus:border-accent/40 outline-none text-sm font-bold"
                         />
                       </div>
+                      <p className="text-[9px] font-medium text-muted uppercase tracking-wider ml-1 italic">Authorized pool for architects and institutional partners.</p>
                     </div>
                   </div>
                 </div>
@@ -338,26 +394,31 @@ export default function CreateStartupPage() {
               exit={{ opacity: 0, x: -20 }}
               className="space-y-8"
             >
-              <div className="bg-white dark:bg-slate-950 p-8 md:p-12 rounded-[3rem] border border-slate-100 dark:border-slate-800 shadow-2xl shadow-emerald-500/5 space-y-10">
+              <div className="enterprise-card p-10 md:p-14 space-y-12 bg-surface-alt/10">
                 <div className="space-y-4">
-                  <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Primary Technology</label>
-                  <select
-                    name="primaryTechnology"
-                    required
-                    disabled={!selectedNiche}
-                    value={formData.primaryTechnology}
-                    onChange={handleChange}
-                    className="w-full px-6 py-5 bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-2xl outline-none text-sm font-bold appearance-none cursor-pointer disabled:opacity-50"
-                  >
-                    <option value="">Select Core Tech</option>
-                    {selectedNiche?.technologies.map(t => <option key={t} value={t}>{t}</option>)}
-                  </select>
+                  <label className="text-[10px] font-bold text-muted uppercase tracking-[0.2em] ml-1">Primary Infrastructure Language</label>
+                  <div className="relative">
+                    <select
+                      name="primaryTechnology"
+                      required
+                      disabled={!selectedNiche}
+                      value={formData.primaryTechnology}
+                      onChange={handleChange}
+                      className="w-full px-5 py-4 bg-background border border-border-subtle rounded-xl outline-none text-sm font-bold appearance-none cursor-pointer disabled:opacity-40 focus:border-accent/40"
+                    >
+                      <option value="">Select Primary Language</option>
+                      {selectedNiche?.technologies.map(t => <option key={t} value={t}>{t}</option>)}
+                    </select>
+                    <div className="absolute right-5 top-1/2 -translate-y-1/2 pointer-events-none text-muted">
+                        <ArrowRight size={14} className="rotate-90" />
+                    </div>
+                  </div>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
                    <div className="space-y-6">
-                      <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1 flex items-center gap-2">
-                        <Cpu size={14} className="text-emerald-500" /> Tech Stack Stack
+                      <label className="text-[10px] font-bold text-muted uppercase tracking-[0.2em] ml-1 flex items-center gap-2">
+                        <Database size={14} className="text-accent" /> Strategic Stack
                       </label>
                       <div className="flex flex-wrap gap-2">
                         {selectedNiche?.technologies.map(tech => (
@@ -366,8 +427,10 @@ export default function CreateStartupPage() {
                             type="button"
                             onClick={() => toggleSelection('techStack', tech)}
                             className={cn(
-                              "px-4 py-2 rounded-xl text-[9px] font-black uppercase tracking-widest border transition-all",
-                              formData.techStack.includes(tech) ? "bg-emerald-600 border-emerald-600 text-white" : "bg-slate-50 dark:bg-slate-900 border-slate-100 dark:border-slate-800 text-slate-400"
+                              "px-4 py-2 rounded-lg text-[10px] font-bold uppercase tracking-tight border transition-all",
+                              formData.techStack.includes(tech) 
+                                ? "bg-accent border-accent text-background shadow-md shadow-accent/10" 
+                                : "bg-background border-border-subtle text-muted hover:border-accent/40"
                             )}
                           >
                             {tech}
@@ -376,8 +439,8 @@ export default function CreateStartupPage() {
                       </div>
                    </div>
                    <div className="space-y-6">
-                      <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1 flex items-center gap-2">
-                        <Briefcase size={14} className="text-blue-500" /> Roles Needed
+                      <label className="text-[10px] font-bold text-muted uppercase tracking-[0.2em] ml-1 flex items-center gap-2">
+                        <Users size={14} className="text-accent" /> Human Capital Requirements
                       </label>
                       <div className="flex flex-wrap gap-2">
                         {selectedNiche?.roles.map(role => (
@@ -386,8 +449,10 @@ export default function CreateStartupPage() {
                             type="button"
                             onClick={() => toggleSelection('requiredRoles', role)}
                             className={cn(
-                              "px-4 py-2 rounded-xl text-[9px] font-black uppercase tracking-widest border transition-all",
-                              formData.requiredRoles.includes(role) ? "bg-blue-600 border-blue-600 text-white" : "bg-slate-50 dark:bg-slate-900 border-slate-100 dark:border-slate-800 text-slate-400"
+                              "px-4 py-2 rounded-lg text-[10px] font-bold uppercase tracking-tight border transition-all",
+                              formData.requiredRoles.includes(role) 
+                                ? "bg-accent border-accent text-background shadow-md shadow-accent/10" 
+                                : "bg-background border-border-subtle text-muted hover:border-accent/40"
                             )}
                           >
                             {role}
@@ -401,32 +466,32 @@ export default function CreateStartupPage() {
           )}
         </AnimatePresence>
 
-        <div className="flex items-center justify-between pt-6 border-t border-slate-100 dark:border-slate-800">
+        <div className="flex items-center justify-between pt-10 border-t border-border-subtle">
           <button
             type="button"
             onClick={prevStep}
             disabled={currentStep === 0 || loading}
-            className="flex items-center gap-3 px-8 py-5 text-[11px] font-black uppercase tracking-widest text-slate-400 hover:text-slate-900 dark:hover:text-white transition-all disabled:opacity-0"
+            className="flex items-center gap-2 px-6 py-3 text-[11px] font-bold uppercase tracking-widest text-muted hover:text-foreground transition-all disabled:opacity-0"
           >
-            <ArrowLeft size={18} /> Take Step Back
+            <ArrowLeft size={16} /> Previous Phase
           </button>
 
           {currentStep < STEPS.length - 1 ? (
-            <button
-              type="button"
-              onClick={nextStep}
-              className="flex items-center gap-4 px-10 py-5 bg-slate-900 dark:bg-white text-white dark:text-slate-900 rounded-[2rem] text-[11px] font-black uppercase tracking-[0.2em] shadow-xl hover:bg-emerald-600 dark:hover:bg-emerald-600 hover:text-white dark:hover:text-white transition-all active:scale-95"
-            >
-              Next Phase <ArrowRight size={18} />
-            </button>
+             <Button
+                type="button"
+                onClick={nextStep}
+                className="h-14 px-10 bg-foreground text-background dark:bg-white dark:text-slate-900 rounded-xl text-[11px] font-bold uppercase tracking-widest shadow-xl transition-all active:scale-95 hover:bg-accent hover:text-background"
+             >
+               Next Phase <ArrowRight size={16} className="ml-2" />
+             </Button>
           ) : (
-            <button
+            <Button
               type="submit"
               disabled={loading}
-              className="flex items-center gap-4 px-12 py-5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-[2rem] text-[11px] font-black uppercase tracking-[0.25em] shadow-2xl shadow-emerald-500/20 transition-all active:scale-95"
+              className="h-14 px-14 bg-accent hover:bg-accent/90 text-background rounded-xl text-[11px] font-bold uppercase tracking-widest shadow-2xl shadow-accent/20 transition-all active:scale-95"
             >
-              {loading ? <Loader2 size={18} className="animate-spin" /> : <>Initiate Mission <Rocket size={20} /></>}
-            </button>
+              {loading ? <Loader2 size={18} className="animate-spin" /> : <>Execute Mission Entry <Zap size={18} className="ml-2 fill-current" /></>}
+            </Button>
           )}
         </div>
       </form>
